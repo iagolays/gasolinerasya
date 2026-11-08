@@ -1,0 +1,176 @@
+---
+// Análisis propio de una zona (provincia o municipio grande): ahorro posible, marcas de la
+// zona y tendencia reciente. Es texto único por página, sacado de los datos, para que las
+// páginas aporten algo más que la tabla de precios (rechazo de AdSense del 2026-11-08).
+import type { FuelKey, Station } from '../lib/types';
+import { statsFor } from '../lib/data';
+import { brandKind, brandPathOf } from '../lib/brands';
+import { GENERIC_BRAND } from '../lib/slug';
+import { int, pct, pctDiff, plural, price, tank } from './util/format';
+import { cap, cents, fuelName, priceU, theFuel } from './util/texts';
+
+interface Props {
+  stations: Station[];
+  /** "Albacete", "Madrid"... */
+  name: string;
+  /** "la provincia de Albacete" / "Albacete" (dentro de una frase). */
+  scope: string;
+  /** Series diarias (mediana) de la zona y de España, para la tendencia. Opcional. */
+  trend?: Partial<Record<FuelKey, { local: Array<{ date: string; value: number }>; national: Array<{ date: string; value: number }> }>>;
+}
+const { stations, name, scope, trend } = Astro.props;
+
+const stats = statsFor(stations);
+const main = (['gasolina95', 'diesel'] as FuelKey[]).filter((f) => stats[f] && stats[f]!.count >= 3);
+
+// Depósitos al año: 15.000 km a 6,5 l/100 km ≈ 975 l ≈ 20 depósitos de 50 l.
+const LITERS_YEAR = 975;
+
+// ── Marcas de la zona ──
+const groups = new Map<string, Station[]>();
+for (const s of stations) {
+  const list = groups.get(s.brand);
+  if (list) list.push(s);
+  else groups.set(s.brand, [s]);
+}
+const refFuel = main[0];
+const brands = [...groups]
+  .filter(([b, list]) => b !== GENERIC_BRAND && list.length >= 2)
+  .map(([b, list]) => ({ name: b, n: list.length, stats: statsFor(list), path: brandPathOf(b) }))
+  .filter((b) => refFuel && b.stats[refFuel])
+  .sort((a, b) => a.stats[refFuel!]!.avg - b.stats[refFuel!]!.avg)
+  .slice(0, 12);
+
+const low = stations.filter((s) => brandKind(s.brand) === 'lowcost');
+const major = stations.filter((s) => brandKind(s.brand) === 'major');
+const lowStats = statsFor(low);
+const majorStats = statsFor(major);
+const lowShare = stations.length ? (low.length / stations.length) * 100 : 0;
+const kindFuel = main.find((f) => (lowStats[f]?.count ?? 0) >= 2 && (majorStats[f]?.count ?? 0) >= 2);
+
+// ── Tendencia ──
+function change(series: Array<{ value: number }>, days: number): number | undefined {
+  if (series.length < days + 1) return undefined;
+  const last = series[series.length - 1]!.value;
+  const prev = series[series.length - 1 - days]!.value;
+  return last - prev;
+}
+const trendRows = main
+  .map((f) => {
+    const t = trend?.[f];
+    if (!t) return null;
+    const days = Math.min(7, t.local.length - 1);
+    if (days < 3) return null;
+    const local = change(t.local, days);
+    const national = change(t.national, days);
+    return local === undefined ? null : { f, days, local, national };
+  })
+  .filter((x) => x !== null);
+
+function moveText(d: number): string {
+  if (Math.abs(d) < 0.002) return 'se ha mantenido estable';
+  return `ha ${d > 0 ? 'subido' : 'bajado'} ${cents(d, 0)} por litro`;
+}
+
+function nationalText(d: number): string {
+  if (Math.abs(d) < 0.002) return 'estable';
+  return `${d > 0 ? '+' : '−'}${cents(d, 0)}`;
+}
+
+const show = main.length > 0;
+---
+{show && (
+  <section class="section" aria-labelledby="ahorro">
+    <h2 id="ahorro">Cuánto puedes ahorrar en {name}</h2>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr><th>Carburante</th><th class="n">Más barata</th><th class="n">Media</th><th class="n">Más cara</th><th class="n">Depósito de 50 l</th><th class="n">Al año*</th></tr>
+        </thead>
+        <tbody>
+          {main.map((f) => {
+            const s = stats[f]!;
+            return (
+              <tr>
+                <td>{cap(fuelName(f))}</td>
+                <td class="n good">{price(s.min)}</td>
+                <td class="n">{price(s.avg)}</td>
+                <td class="n">{price(s.max)}</td>
+                <td class="n">{tank(s.min)} – {tank(s.max)}</td>
+                <td class="n">{int(Math.round((s.max - s.min) * LITERS_YEAR))} €</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">* Diferencia entre repostar siempre en la más barata o en la más cara, para 15.000 km al año con un consumo real de 6,5 l/100 km (unos {int(LITERS_YEAR)} litros).</p>
+    <div class="prose">
+      {main.map((f) => {
+        const s = stats[f]!;
+        const saveAvg = (s.avg - s.min) * LITERS_YEAR;
+        return (
+          <p>
+            Con {theFuel(f)}, llenar un depósito de 50 litros en {scope} cuesta entre {tank(s.min)} y {tank(s.max)}.
+            {saveAvg >= 5 && <> Si sueles repostar en una gasolinera de precio medio y te pasas a la más barata, ahorrarías unos {int(Math.round(saveAvg))} € al año.</>}
+          </p>
+        );
+      })}
+      {kindFuel && (
+        <p>
+          {lowShare >= 1
+            ? <>Las gasolineras low cost son el {pct(lowShare)} de las de {scope} ({plural(low.length, 'estación', 'estaciones')}). </>
+            : null}
+          De media, {theFuel(kindFuel)} sale a {priceU(lowStats[kindFuel]!.avg, kindFuel)} en las low cost y a {priceU(majorStats[kindFuel]!.avg, kindFuel)} en las grandes marcas
+          {majorStats[kindFuel]!.avg > lowStats[kindFuel]!.avg
+            ? <>: {cents(majorStats[kindFuel]!.avg, lowStats[kindFuel]!.avg)} menos por litro ({pct(pctDiff(lowStats[kindFuel]!.avg, majorStats[kindFuel]!.avg))}).</>
+            : <>, así que aquí las low cost no son más baratas que las grandes marcas.</>}
+          {' '}Puedes leer más en el informe <a href="/informes/low-cost-vs-tradicionales/">low cost frente a gasolineras tradicionales</a>.
+        </p>
+      )}
+      {trendRows.length > 0 && (
+        <p>
+          En los últimos {trendRows[0]!.days} días, {trendRows.map((r, i) => (
+            <>{i > 0 && ' y '}{theFuel(r.f)} {moveText(r.local)} en {name}{r.national !== undefined && <> (en el conjunto de España, {nationalText(r.national)})</>}</>
+          ))}. Si quieres saber por qué cambian los precios, lo explicamos en <a href="/guias/por-que-sube-y-baja-la-gasolina/">por qué sube y baja la gasolina</a>.
+        </p>
+      )}
+    </div>
+  </section>
+)}
+
+{brands.length >= 2 && refFuel && (
+  <section class="section" aria-labelledby="marcas-zona">
+    <h2 id="marcas-zona">Marcas en {name}</h2>
+    <p class="section-sub">Marcas con al menos dos gasolineras en {scope}, de más barata a más cara en {fuelName(refFuel)}.</p>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Marca</th><th class="n">Gasolineras</th>
+            {main.map((f) => <th class="n">{cap(fuelName(f))}</th>)}
+            <th class="n">vs. media</th>
+          </tr>
+        </thead>
+        <tbody>
+          {brands.map((b) => {
+            const d = pctDiff(b.stats[refFuel]!.avg, stats[refFuel]!.avg);
+            return (
+              <tr>
+                <td>{b.path ? <a href={b.path}>{b.name}</a> : b.name}</td>
+                <td class="n">{int(b.n)}</td>
+                {main.map((f) => <td class="n">{b.stats[f] ? price(b.stats[f]!.avg) : '—'}</td>)}
+                <td class:list={['n', d < -0.5 ? 'good' : d > 0.5 ? 'bad' : '']}>{pct(d, true)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+    <p class="prose">
+      La marca más barata de media en {scope} es <strong>{brands[0]!.name}</strong> y la más cara de la lista,{' '}
+      <strong>{brands[brands.length - 1]!.name}</strong>: {cents(brands[brands.length - 1]!.stats[refFuel]!.avg, brands[0]!.stats[refFuel]!.avg)} de diferencia
+      por litro de {fuelName(refFuel)}. Es una media: dentro de cada marca cada gasolinera fija su precio, así que compara siempre la estación concreta.
+    </p>
+  </section>
+)}

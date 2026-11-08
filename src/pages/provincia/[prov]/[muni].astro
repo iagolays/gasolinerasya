@@ -8,6 +8,7 @@ import FuelTabs from '../../../components/FuelTabs.astro';
 import StatsGrid from '../../../components/StatsGrid.astro';
 import StationTable from '../../../components/StationTable.astro';
 import MapView from '../../../components/MapView.astro';
+import AreaInsights from '../../../components/AreaInsights.astro';
 import { itemListLd } from '../../../components/seo/schema';
 import {
   cheapest,
@@ -156,6 +157,8 @@ const path = municipalityPath(muni);
     <h2 id="estadisticas">Precio medio en {name}</h2>
     <StatsGrid stats={stats} reference={pStats} refLabel={`vs. ${pName}`} />
   </section>
+
+  {isIndexableMunicipality(muni) && <AreaInsights stations={stations} name={name} scope={name} />}
 
   {nearby.length > 0 && (
     <section class="section" aria-labelledby="cercanos">

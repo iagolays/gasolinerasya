@@ -8,6 +8,7 @@ import FuelTabs from '../../../components/FuelTabs.astro';
 import StatsGrid from '../../../components/StatsGrid.astro';
 import Ranking from '../../../components/Ranking.astro';
 import HistoryChart from '../../../components/HistoryChart.astro';
+import AreaInsights from '../../../components/AreaInsights.astro';
 import { itemListLd } from '../../../components/seo/schema';
 import {
   cheapest,
@@ -17,6 +18,7 @@ import {
   hasOwnFuelTaxes,
   municipalityPath,
   municipalityStats,
+  nationalHistory,
   nationalStats,
   provincePath,
   provinceHistory,
@@ -157,6 +159,13 @@ const path = provincePath(province);
     <FuelTabs fuels={fuels} sticky />
     <Ranking rankings={rankings} reference={stats} refLabel={`vs. ${name}`} place="municipality" />
   </section>
+
+  <AreaInsights
+    stations={stations}
+    name={name}
+    scope={`la provincia de ${name}`}
+    trend={Object.fromEntries(fuels.map((f) => [f, { local: series[f] ?? [], national: nationalHistory(f) }]))}
+  />
 
   <AdSlot position="inline" />
 
