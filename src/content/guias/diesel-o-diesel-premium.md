@@ -3,7 +3,7 @@ title: "Diésel o diésel premium: ¿merece la pena?"
 description: "Diferencias entre el gasóleo A normal y el premium (aditivado), qué ventajas tiene y cuándo compensa pagar más."
 date: 2026-10-27
 order: 6
-related: [gasolina-95-o-98, adblue-que-es, gasolina-o-diesel]
+related: [gasolina-95-o-98, adblue-que-es, gasolina-o-diesel, etiquetas-e5-e10-b7]
 ---
 
 Junto al gasóleo A normal, muchas gasolineras venden un gasóleo «premium» con nombres comerciales distintos según la marca. Es más caro. ¿Qué tiene de diferente?

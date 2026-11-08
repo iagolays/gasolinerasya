@@ -3,7 +3,7 @@ title: "Gasolina 95 o 98: diferencias y cuál echar"
 description: "Qué significa el 95 y el 98, si la gasolina 98 da más potencia o limpia el motor y cuándo merece la pena pagar la diferencia."
 date: 2026-10-27
 order: 5
-related: [diesel-o-diesel-premium, gasolineras-low-cost-calidad, como-ahorrar-gasolina]
+related: [diesel-o-diesel-premium, gasolineras-low-cost-calidad, como-ahorrar-gasolina, etiquetas-e5-e10-b7]
 ---
 
 En casi todas las gasolineras hay dos surtidores de gasolina: el de 95 y el de 98, que es bastante más caro. ¿Merece la pena?

@@ -3,7 +3,7 @@ title: "Cómo ahorrar gasolina: 12 consejos que funcionan"
 description: "Consejos prácticos para gastar menos en gasolina y diésel: dónde y cuándo repostar, cómo conducir y qué revisar en el coche."
 date: 2026-10-27
 order: 0
-related: [compensa-desviarse-para-repostar, mejor-dia-para-repostar, consumo-real-vs-homologado]
+related: [compensa-desviarse-para-repostar, mejor-dia-para-repostar, consumo-real-vs-homologado, mitos-al-repostar, descuentos-y-tarjetas-carburante]
 ---
 
 Hay dos formas de gastar menos en carburante: **pagar menos por cada litro** y **gastar menos litros**. Las dos suman.

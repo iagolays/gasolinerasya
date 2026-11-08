@@ -3,7 +3,7 @@ title: "¿Gasolina o diésel? Cuál sale más barato según tus kilómetros"
 description: "Cómo calcular si te compensa un coche diésel o de gasolina: consumo, precio del litro, kilómetros al año y etiqueta ambiental."
 date: 2026-10-27
 order: 9
-related: [consumo-real-vs-homologado, glp-autogas, diesel-o-diesel-premium]
+related: [consumo-real-vs-homologado, glp-autogas, diesel-o-diesel-premium, coche-electrico-o-gasolina, combustible-equivocado]
 ---
 
 Durante años, el diésel fue la opción lógica para quien hacía muchos kilómetros. Hoy la cuenta no es tan clara. Así puedes hacerla.

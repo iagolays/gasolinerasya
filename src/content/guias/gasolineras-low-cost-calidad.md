@@ -3,7 +3,7 @@ title: "¿Es peor la gasolina de las gasolineras low cost?"
 description: "Por qué las gasolineras low cost son más baratas, si su carburante es de peor calidad y qué cambia de verdad respecto a las grandes marcas."
 date: 2026-10-27
 order: 1
-related: [gasolina-95-o-98, diesel-o-diesel-premium, como-ahorrar-gasolina]
+related: [gasolina-95-o-98, diesel-o-diesel-premium, como-ahorrar-gasolina, gasolineras-desatendidas]
 ---
 
 Las gasolineras low cost (Ballenoil, Plenergy, Petroprix, las de los supermercados…) suelen ser las más baratas de cada zona. Muchos conductores se preguntan si el ahorro se paga en calidad. La respuesta corta es **no**.
