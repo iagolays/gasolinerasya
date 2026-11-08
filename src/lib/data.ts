@@ -184,6 +184,17 @@ export function isPeninsular(provinceId: string): boolean {
 }
 
 /** Ruta de un municipio: "/provincia/albacete/abengibre/". */
+/**
+ * Municipios con menos gasolineras que esto llevan noindex y no entran en el sitemap:
+ * su página repite casi lo mismo que la ficha de la gasolinera y AdSense la ve como
+ * «contenido de poco valor» (rechazo del 2026-11-08). Se pueden visitar igual.
+ */
+export const MIN_STATIONS_TO_INDEX = 3;
+
+export function isIndexableMunicipality(muni: Municipality): boolean {
+  return muni.stationIds.length >= MIN_STATIONS_TO_INDEX;
+}
+
 export function municipalityPath(muni: Municipality): string {
   const prov = getProvinceById(muni.provinceId);
   return `/provincia/${prov?.slug ?? muni.provinceId}/${muni.slug}/`;

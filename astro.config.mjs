@@ -2,10 +2,23 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { SITE } from './src/site.config.ts';
+import { getMunicipalities, isIndexableMunicipality, municipalityPath } from './src/lib/data.ts';
 
 // Páginas que no se incluyen en el sitemap (y que llevan noindex en su <Seo>).
 // El 404 lo excluye ya la integración.
 const NO_SITEMAP = ['/privacidad/', '/cookies/', '/aviso-legal/'];
+
+// Fichas de gasolinera y municipios pequeños: noindex para no llenar el índice de páginas
+// casi iguales (AdSense rechazó el sitio por «contenido de poco valor» el 2026-11-08).
+// Se calcula al filtrar, cuando ya existe dataset.json.
+/** @type {Set<string> | undefined} */
+let thinMunis;
+/** @param {string} path */
+const isThin = (path) => {
+  if (path.startsWith('/gasolinera/')) return true;
+  thinMunis ??= new Set(getMunicipalities().filter((m) => !isIndexableMunicipality(m)).map(municipalityPath));
+  return thinMunis.has(path);
+};
 
 // Fecha del build: los precios cambian cada hora, así que todas las páginas se
 // consideran modificadas en cada despliegue.
@@ -27,15 +40,16 @@ export default defineConfig({
   },
   integrations: [
     sitemap({
-      filter: (page) => !NO_SITEMAP.includes(new URL(page).pathname),
+      filter: (page) => {
+        const path = new URL(page).pathname;
+        return !NO_SITEMAP.includes(path) && !isThin(path);
+      },
       lastmod: buildDate,
-      // ~14.700 URLs: se reparten en varios sitemaps por tipo de página, enlazados desde
-      // sitemap-index.xml. Cada archivo admite como mucho 50.000 URLs; con 10.000 hay margen.
-      // Archivos: sitemap-gasolineras-0.xml, sitemap-gasolineras-1.xml, sitemap-provincias-0.xml
-      // (provincias y municipios) y sitemap-pages-0.xml (portada, /cerca/, /acerca/...).
+      // Se reparten por tipo de página, enlazados desde sitemap-index.xml:
+      // sitemap-provincias-0.xml (provincias y municipios indexables) y sitemap-pages-0.xml
+      // (portada, guías, marcas...). Las fichas de gasolinera ya no entran (noindex).
       entryLimit: 10000,
       chunks: {
-        gasolineras: byPrefix('/gasolinera/'),
         provincias: byPrefix('/provincia/'),
       },
     }),

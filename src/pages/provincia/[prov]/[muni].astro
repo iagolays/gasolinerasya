@@ -14,6 +14,7 @@ import {
   getMunicipalities,
   getProvinceById,
   getStationsOf,
+  isIndexableMunicipality,
   municipalityPath,
   municipalityStats,
   nearbyMunicipalities,
@@ -84,6 +85,7 @@ const path = municipalityPath(muni);
   title={title}
   description={description}
   path={path}
+  noindex={!isIndexableMunicipality(muni)}
   fuels={fuels}
   defaultFuel={defaultFuel}
   breadcrumbs={[
