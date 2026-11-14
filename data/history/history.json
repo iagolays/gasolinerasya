@@ -9127,5 +9127,461 @@
     "adblue": 1.249
    }
   }
+ },
+ {
+  "date": "2026-11-15",
+  "national": {
+   "gasolina95": 1.639,
+   "diesel": 1.859,
+   "gasolina98": 1.809,
+   "dieselPremium": 1.959,
+   "glp": 1.17,
+   "gnc": 2.09,
+   "adblue": 0.949
+  },
+  "provinces": {
+   "10": {
+    "gasolina95": 1.629,
+    "diesel": 1.915,
+    "gasolina98": 1.809,
+    "dieselPremium": 2.009,
+    "glp": 1.185,
+    "gnc": 2.133,
+    "adblue": 0.949
+   },
+   "11": {
+    "gasolina95": 1.615,
+    "diesel": 1.845,
+    "gasolina98": 1.785,
+    "dieselPremium": 1.929,
+    "glp": 1.182,
+    "gnc": 2.099,
+    "adblue": 0.985
+   },
+   "12": {
+    "gasolina95": 1.679,
+    "diesel": 1.849,
+    "gasolina98": 1.845,
+    "dieselPremium": 1.959,
+    "glp": 1.199,
+    "gnc": 1.699,
+    "adblue": 0.94
+   },
+   "13": {
+    "gasolina95": 1.615,
+    "diesel": 1.879,
+    "gasolina98": 1.785,
+    "dieselPremium": 1.965,
+    "glp": 1.149,
+    "gnc": 2.199,
+    "adblue": 0.9
+   },
+   "14": {
+    "gasolina95": 1.625,
+    "diesel": 1.889,
+    "gasolina98": 1.785,
+    "dieselPremium": 1.979,
+    "glp": 1.159,
+    "gnc": 2.199,
+    "adblue": 0.95
+   },
+   "15": {
+    "gasolina95": 1.639,
+    "diesel": 1.887,
+    "gasolina98": 1.809,
+    "dieselPremium": 1.965,
+    "glp": 1.099,
+    "gnc": 2.124,
+    "adblue": 0.92
+   },
+   "16": {
+    "gasolina95": 1.659,
+    "diesel": 1.849,
+    "gasolina98": 1.787,
+    "dieselPremium": 1.955,
+    "glp": 1.194,
+    "gnc": 2.099,
+    "adblue": 0.904
+   },
+   "17": {
+    "gasolina95": 1.652,
+    "diesel": 1.859,
+    "gasolina98": 1.805,
+    "dieselPremium": 1.964,
+    "glp": 1.175,
+    "gnc": 2.024,
+    "adblue": 0.92
+   },
+   "18": {
+    "gasolina95": 1.627,
+    "diesel": 1.855,
+    "gasolina98": 1.785,
+    "dieselPremium": 1.955,
+    "glp": 1.069,
+    "gnc": 2.199,
+    "adblue": 0.899
+   },
+   "19": {
+    "gasolina95": 1.685,
+    "diesel": 1.895,
+    "gasolina98": 1.845,
+    "dieselPremium": 1.975,
+    "glp": 1.059,
+    "gnc": 2.072,
+    "adblue": 0.879
+   },
+   "20": {
+    "gasolina95": 1.689,
+    "diesel": 1.919,
+    "gasolina98": 1.835,
+    "dieselPremium": 1.999,
+    "glp": 1.185,
+    "gnc": 1.989,
+    "adblue": 0.95
+   },
+   "21": {
+    "gasolina95": 1.679,
+    "diesel": 1.909,
+    "gasolina98": 1.839,
+    "dieselPremium": 1.989,
+    "glp": 1.179,
+    "adblue": 0.99
+   },
+   "22": {
+    "gasolina95": 1.634,
+    "diesel": 1.855,
+    "gasolina98": 1.775,
+    "dieselPremium": 1.942,
+    "glp": 1.249,
+    "adblue": 0.889
+   },
+   "23": {
+    "gasolina95": 1.635,
+    "diesel": 1.885,
+    "gasolina98": 1.799,
+    "dieselPremium": 1.969,
+    "glp": 1.104,
+    "gnc": 2.033,
+    "adblue": 0.959
+   },
+   "24": {
+    "gasolina95": 1.634,
+    "diesel": 1.895,
+    "gasolina98": 1.785,
+    "dieselPremium": 1.969,
+    "glp": 1.185,
+    "adblue": 0.819
+   },
+   "25": {
+    "gasolina95": 1.612,
+    "diesel": 1.828,
+    "gasolina98": 1.787,
+    "dieselPremium": 1.917,
+    "glp": 1.249,
+    "gnc": 1.966,
+    "adblue": 0.615
+   },
+   "26": {
+    "gasolina95": 1.612,
+    "diesel": 1.869,
+    "gasolina98": 1.799,
+    "dieselPremium": 1.969,
+    "glp": 1.179,
+    "adblue": 0.899
+   },
+   "27": {
+    "gasolina95": 1.649,
+    "diesel": 1.909,
+    "gasolina98": 1.789,
+    "dieselPremium": 1.989,
+    "glp": 1.159,
+    "adblue": 0.95
+   },
+   "28": {
+    "gasolina95": 1.659,
+    "diesel": 1.879,
+    "gasolina98": 1.819,
+    "dieselPremium": 1.959,
+    "glp": 1.179,
+    "gnc": 2.099,
+    "adblue": 0.999
+   },
+   "29": {
+    "gasolina95": 1.679,
+    "diesel": 1.909,
+    "gasolina98": 1.829,
+    "dieselPremium": 1.995,
+    "glp": 1.134,
+    "gnc": 2.099,
+    "adblue": 0.968
+   },
+   "30": {
+    "gasolina95": 1.619,
+    "diesel": 1.839,
+    "gasolina98": 1.775,
+    "dieselPremium": 1.919,
+    "glp": 1.119,
+    "gnc": 2.099,
+    "adblue": 0.949
+   },
+   "31": {
+    "gasolina95": 1.599,
+    "diesel": 1.799,
+    "gasolina98": 1.789,
+    "dieselPremium": 1.949,
+    "glp": 1.159,
+    "gnc": 1.824,
+    "adblue": 0.735
+   },
+   "32": {
+    "gasolina95": 1.629,
+    "diesel": 1.889,
+    "gasolina98": 1.785,
+    "dieselPremium": 1.955,
+    "glp": 1.259,
+    "adblue": 0.999
+   },
+   "33": {
+    "gasolina95": 1.699,
+    "diesel": 1.919,
+    "gasolina98": 1.835,
+    "dieselPremium": 1.989,
+    "glp": 1.239,
+    "adblue": 1.02
+   },
+   "34": {
+    "gasolina95": 1.63,
+    "diesel": 1.915,
+    "gasolina98": 1.785,
+    "dieselPremium": 1.995,
+    "glp": 1.202,
+    "adblue": 0.949
+   },
+   "35": {
+    "gasolina95": 1.499,
+    "diesel": 1.685,
+    "gasolina98": 1.629,
+    "dieselPremium": 1.78,
+    "glp": 0.92,
+    "adblue": 1.435
+   },
+   "36": {
+    "gasolina95": 1.619,
+    "diesel": 1.879,
+    "gasolina98": 1.779,
+    "dieselPremium": 1.979,
+    "glp": 1.199,
+    "adblue": 0.99
+   },
+   "37": {
+    "gasolina95": 1.649,
+    "diesel": 1.915,
+    "gasolina98": 1.809,
+    "dieselPremium": 1.997,
+    "glp": 1.178,
+    "gnc": 1.981,
+    "adblue": 0.949
+   },
+   "38": {
+    "gasolina95": 1.552,
+    "diesel": 1.719,
+    "gasolina98": 1.669,
+    "dieselPremium": 1.829,
+    "glp": 0.92,
+    "gnc": 1.925,
+    "adblue": 1.81
+   },
+   "39": {
+    "gasolina95": 1.683,
+    "diesel": 1.915,
+    "gasolina98": 1.839,
+    "dieselPremium": 1.984,
+    "glp": 1.169,
+    "adblue": 0.99
+   },
+   "40": {
+    "gasolina95": 1.619,
+    "diesel": 1.869,
+    "gasolina98": 1.799,
+    "dieselPremium": 1.949,
+    "glp": 1.124,
+    "adblue": 0.892
+   },
+   "41": {
+    "gasolina95": 1.669,
+    "diesel": 1.859,
+    "gasolina98": 1.855,
+    "dieselPremium": 1.984,
+    "glp": 1.159,
+    "gnc": 2.199,
+    "adblue": 0.999
+   },
+   "42": {
+    "gasolina95": 1.624,
+    "diesel": 1.849,
+    "gasolina98": 1.795,
+    "dieselPremium": 1.944,
+    "glp": 1.16,
+    "adblue": 0.669
+   },
+   "43": {
+    "gasolina95": 1.639,
+    "diesel": 1.845,
+    "gasolina98": 1.799,
+    "dieselPremium": 1.949,
+    "glp": 1.179,
+    "gnc": 1.939,
+    "adblue": 0.719
+   },
+   "44": {
+    "gasolina95": 1.632,
+    "diesel": 1.899,
+    "gasolina98": 1.797,
+    "dieselPremium": 2.005,
+    "glp": 1.192,
+    "adblue": 0.819
+   },
+   "45": {
+    "gasolina95": 1.629,
+    "diesel": 1.886,
+    "gasolina98": 1.815,
+    "dieselPremium": 1.969,
+    "glp": 1.089,
+    "gnc": 1.999,
+    "adblue": 0.954
+   },
+   "46": {
+    "gasolina95": 1.629,
+    "diesel": 1.799,
+    "gasolina98": 1.849,
+    "dieselPremium": 1.935,
+    "glp": 1.1,
+    "gnc": 1.99,
+    "adblue": 0.949
+   },
+   "47": {
+    "gasolina95": 1.675,
+    "diesel": 1.899,
+    "gasolina98": 1.859,
+    "dieselPremium": 1.967,
+    "glp": 1.235,
+    "adblue": 0.9
+   },
+   "48": {
+    "gasolina95": 1.679,
+    "diesel": 1.91,
+    "gasolina98": 1.825,
+    "dieselPremium": 1.891,
+    "glp": 1.229,
+    "gnc": 1.987,
+    "adblue": 0.949
+   },
+   "49": {
+    "gasolina95": 1.629,
+    "diesel": 1.869,
+    "gasolina98": 1.799,
+    "dieselPremium": 1.959,
+    "glp": 1.239,
+    "adblue": 0.874
+   },
+   "50": {
+    "gasolina95": 1.63,
+    "diesel": 1.849,
+    "gasolina98": 1.799,
+    "dieselPremium": 1.929,
+    "glp": 1.19,
+    "gnc": 1.966,
+    "adblue": 0.899
+   },
+   "51": {
+    "gasolina95": 1.553,
+    "diesel": 1.723,
+    "gasolina98": 1.583,
+    "dieselPremium": 1.789,
+    "adblue": 1.205
+   },
+   "52": {
+    "gasolina95": 1.614,
+    "diesel": 1.687,
+    "dieselPremium": 1.727
+   },
+   "01": {
+    "gasolina95": 1.689,
+    "diesel": 1.915,
+    "gasolina98": 1.832,
+    "dieselPremium": 1.987,
+    "glp": 1.129,
+    "gnc": 2.081,
+    "adblue": 0.895
+   },
+   "02": {
+    "gasolina95": 1.639,
+    "diesel": 1.869,
+    "gasolina98": 1.799,
+    "dieselPremium": 1.969,
+    "glp": 1.179,
+    "gnc": 2.099,
+    "adblue": 0.999
+   },
+   "03": {
+    "gasolina95": 1.679,
+    "diesel": 1.875,
+    "gasolina98": 1.839,
+    "dieselPremium": 1.979,
+    "glp": 1.139,
+    "gnc": 1.994,
+    "adblue": 0.99
+   },
+   "04": {
+    "gasolina95": 1.645,
+    "diesel": 1.819,
+    "gasolina98": 1.809,
+    "dieselPremium": 1.979,
+    "glp": 1.162,
+    "adblue": 0.894
+   },
+   "05": {
+    "gasolina95": 1.669,
+    "diesel": 1.895,
+    "gasolina98": 1.844,
+    "dieselPremium": 1.994,
+    "glp": 1.189,
+    "adblue": 0.899
+   },
+   "06": {
+    "gasolina95": 1.629,
+    "diesel": 1.879,
+    "gasolina98": 1.809,
+    "dieselPremium": 1.999,
+    "glp": 1.199,
+    "adblue": 0.899
+   },
+   "08": {
+    "gasolina95": 1.629,
+    "diesel": 1.826,
+    "gasolina98": 1.815,
+    "dieselPremium": 1.899,
+    "glp": 1.229,
+    "gnc": 2.023,
+    "adblue": 0.889
+   },
+   "09": {
+    "gasolina95": 1.669,
+    "diesel": 1.888,
+    "gasolina98": 1.83,
+    "dieselPremium": 1.979,
+    "glp": 1.16,
+    "gnc": 1.905,
+    "adblue": 0.844
+   },
+   "07": {
+    "gasolina95": 1.719,
+    "diesel": 1.939,
+    "gasolina98": 1.855,
+    "dieselPremium": 2.035,
+    "glp": 1.179,
+    "adblue": 1.249
+   }
+  }
  }
 ]
