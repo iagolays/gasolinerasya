@@ -39,3 +39,12 @@ Usa tus propios precios y consumos (aquí te explicamos cómo medir tu [consumo 
 - **Muchos kilómetros al año, sobre todo en carretera**: el diésel todavía puede compensar.
 - **Pocos kilómetros o mucha ciudad**: normalmente sale mejor un gasolina (o un híbrido).
 - **Si quieres gastar mucho menos por litro**: mira también el [GLP (autogás)](/guias/glp-autogas/).
+
+## Fuentes
+
+- [Distintivo ambiental](https://www.dgt.es/nuestros-servicios/tu-vehiculo/tus-vehiculos/distintivo-ambiental/): criterios de las etiquetas CERO, ECO, C y B (Dirección General de Tráfico).
+- [Base de datos de consumo y emisiones de turismos](https://coches.idae.es/) (IDAE).
+- [Euros por 100 km](https://www.miteco.gob.es/es/energia/hidrocarburos-nuevos-combustibles/euros-por-100-km.html): comparación oficial del coste de gasolina, gasóleo, GLP, GNC y electricidad (Ministerio para la Transición Ecológica).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

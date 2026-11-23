@@ -29,3 +29,11 @@ Hay dos formas de gastar menos en carburante: **pagar menos por cada litro** y *
 ## Cuánto puedes ahorrar
 
 Si haces 15.000 km al año con un consumo de 6,5 l/100 km, gastas unos 975 litros. **Repostar 10 céntimos más barato son casi 100 € al año**, y conducir de forma eficiente puede bajar el consumo de forma notable. Haz tus cuentas con la [calculadora de gasolina](/calculadora-gasolina/) y mide tu [consumo real](/guias/consumo-real-vs-homologado/).
+
+## Fuentes
+
+- [Manual de conducción eficiente para vehículos turismo](https://www.miteco.gob.es/es/ceneam/programas-de-educacion-ambiental/hogares-verdes/conduccion_eficiente_idae_tcm30-171577.pdf) (IDAE, PDF alojado por el Ministerio para la Transición Ecológica).
+- [Base de datos de consumo y emisiones de turismos](https://coches.idae.es/) (IDAE).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

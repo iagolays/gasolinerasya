@@ -27,6 +27,52 @@ const e95 = extremes('gasolina95');
 const eD = extremes('diesel');
 const best95 = cheapest(pen, 'gasolina95', 1)[0];
 
+// Cifras de referencia fijas (mediana de península y Baleares del 23-11-2026) para los ejemplos resueltos.
+const REF_DATE = '23-11-2026';
+const REF95 = 1.569;
+const REFD = 1.808;
+const nf1 = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 });
+const p3 = (n: number) => n.toLocaleString('es-ES', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+
+// Depósitos y consumos reales orientativos por tipo de vehículo. Rangos aproximados: cada modelo es distinto.
+const VEHICULOS: Array<{ tipo: string; fuel: 'g' | 'd'; tank: number; tankTxt: string; cons: number }> = [
+  { tipo: 'Utilitario de gasolina', fuel: 'g', tank: 42, tankTxt: '35–45 l', cons: 6 },
+  { tipo: 'Compacto de gasolina', fuel: 'g', tank: 50, tankTxt: '45–55 l', cons: 6.8 },
+  { tipo: 'Compacto diésel', fuel: 'd', tank: 50, tankTxt: '45–55 l', cons: 5.2 },
+  { tipo: 'Híbrido no enchufable', fuel: 'g', tank: 43, tankTxt: '35–50 l', cons: 4.8 },
+  { tipo: 'SUV mediano de gasolina', fuel: 'g', tank: 55, tankTxt: '50–60 l', cons: 8 },
+  { tipo: 'SUV grande o todoterreno diésel', fuel: 'd', tank: 70, tankTxt: '60–80 l', cons: 7.5 },
+  { tipo: 'Furgoneta diésel', fuel: 'd', tank: 75, tankTxt: '60–90 l', cons: 8.5 },
+];
+
+const FAQ: Array<{ q: string; a: string }> = [
+  {
+    q: '¿Por qué no me caben los litros que dice el catálogo?',
+    a: 'Porque casi nunca llegas con el depósito vacío. Cuando se enciende la luz de reserva suelen quedar entre 5 y 10 litros, así que en un depósito de 50 litros normalmente echas 40–45. Además, la capacidad nominal es aproximada.',
+  },
+  {
+    q: '¿Es mejor llenar el depósito o echar 20 €?',
+    a: 'El litro cuesta lo mismo eches lo que eches. Llenar tiene la ventaja de que repostas menos veces y puedes elegir la gasolinera barata; echar poco te obliga a parar más a menudo y aumenta la probabilidad de repostar donde te pille.',
+  },
+  {
+    q: '¿Qué precio usa esta página?',
+    a: 'El precio medio de cada carburante calculado con los precios que publica el Ministerio para todas las gasolineras de España, actualizado cada hora. Los ejemplos resueltos usan cifras de referencia fijas para que se puedan comprobar.',
+  },
+  {
+    q: '¿Por qué es más barato llenar en Canarias, Ceuta y Melilla?',
+    a: 'Porque allí no se aplican el IVA ni el impuesto especial sobre hidrocarburos de la península, sino impuestos propios más bajos. Por eso las comparaciones de esta página se hacen con la península.',
+  },
+  {
+    q: '¿Qué pasa si pido «lleno» en una gasolinera automática?',
+    a: 'El terminal reserva una cantidad en tu tarjeta (por ejemplo, 100 o 150 €) y al terminar solo te cobra lo que has echado. La reserva puede tardar unos días en liberarse, según el banco.',
+  },
+];
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+
 const title = '¿Cuánto cuesta llenar el depósito hoy? Gasolina y diésel';
 const description = national.gasolina95
   ? `Llenar un depósito de 50 litros de gasolina 95 cuesta hoy ${eur(national.gasolina95.avg * 50)} de media en España. Precio para 40, 50, 60 y 70 litros, por carburante y provincia.`
@@ -38,6 +84,7 @@ const description = national.gasolina95
   path="/informes/cuanto-cuesta-llenar-el-deposito/"
   fuels={fuels}
   ogType="article"
+  jsonLd={faqLd}
   breadcrumbs={[{ name: 'Informes', path: '/informes/' }, { name: 'Llenar el depósito', path: '/informes/cuanto-cuesta-llenar-el-deposito/' }]}
 >
   <article class="article">
@@ -104,6 +151,75 @@ const description = national.gasolina95
       {national.diesel && <> o {eur(national.diesel.avg * 65)} en diésel</>}. Haz tu propia cuenta con la{' '}
       <a href="/calculadora-gasolina/">calculadora de gasolina</a>.
     </p>
+
+    <h2>Cómo se calcula</h2>
+    <ul>
+      <li><strong>Coste de llenar</strong> = litros que echas × precio por litro.</li>
+      <li><strong>Litros que echas</strong> = capacidad del depósito − lo que queda dentro. Si llegas en reserva, suelen quedar 5–10 litros.</li>
+      <li><strong>Autonomía</strong> = litros ÷ consumo (l/100 km) × 100.</li>
+      <li><strong>Diferencia entre dos gasolineras</strong> = litros × diferencia de precio por litro.</li>
+    </ul>
+    <p>
+      Las tablas de arriba usan el precio medio de hoy, que se recalcula cada hora con los datos oficiales. Los ejemplos de abajo usan
+      precios de referencia fijos del {REF_DATE} (mediana de península y Baleares): gasolina 95 a {p3(REF95)} €/l y gasóleo A a {p3(REFD)} €/l.
+    </p>
+
+    <h2>Tres ejemplos resueltos</h2>
+    <h3>1. Un utilitario que llega en reserva</h3>
+    <p>
+      Depósito de 45 litros y quedan unos 7: echas 38 litros de gasolina 95. Cuestan 38 × {p3(REF95)} = <strong>{eur(38 * REF95)}</strong>.
+      Con un consumo real de 6 l/100 km te dan para unos {Math.round((38 / 6) * 100)} km.
+    </p>
+    <h3>2. Un SUV diésel de 60 litros, de vacío a lleno</h3>
+    <p>
+      60 × {p3(REFD)} = <strong>{eur(60 * REFD)}</strong>. Si repostas en una gasolinera 12 céntimos más barata que la media, te ahorras{' '}
+      {eur(60 * 0.12)} en ese depósito; con un lleno cada dos semanas, unos {eur(60 * 0.12 * 26)} al año.
+    </p>
+    <h3>3. Gasolina o diésel con el mismo depósito</h3>
+    <p>
+      Llenar 50 litros cuesta {eur(50 * REF95)} de gasolina 95 y {eur(50 * REFD)} de gasóleo A con los precios del {REF_DATE}: el diésel sale{' '}
+      {eur(50 * (REFD - REF95))} más caro por depósito. Pero un diésel suele recorrer más kilómetros con esos litros, así que lo que
+      importa es el coste por kilómetro. Lo comparamos en <a href="/guias/gasolina-o-diesel/">¿gasolina o diésel?</a>
+    </p>
+
+    <h2>Depósito, autonomía y coste por tipo de vehículo</h2>
+    <p>
+      Capacidades y consumos <strong>orientativos</strong>: cada modelo es distinto, así que mira la ficha técnica de tu coche. El coste
+      del depósito lleno usa un valor típico de cada rango y los precios de referencia del {REF_DATE}.
+    </p>
+    <div class="table-scroll">
+      <table class="data-table">
+        <thead><tr><th>Vehículo</th><th>Depósito habitual</th><th class="n">Consumo real orientativo</th><th class="n">Autonomía aprox.</th><th class="n">Lleno (valor típico)</th></tr></thead>
+        <tbody>
+          {VEHICULOS.map((v) => (
+            <tr>
+              <td>{v.tipo}</td>
+              <td>{v.tankTxt}</td>
+              <td class="n">{nf1.format(v.cons)} l/100 km</td>
+              <td class="n">{Math.round((v.tank / v.cons) * 10) * 10} km</td>
+              <td class="n">{eur(v.tank * (v.fuel === 'g' ? REF95 : REFD))} ({v.tank} l)</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Preguntas frecuentes</h2>
+    {FAQ.map((f) => (
+      <>
+        <h3>{f.q}</h3>
+        <p>{f.a}</p>
+      </>
+    ))}
+
+    <h2>Guías relacionadas</h2>
+    <ul>
+      <li><a href="/guias/como-ahorrar-gasolina/">Cómo ahorrar gasolina</a>: lo que más se nota en cada depósito.</li>
+      <li><a href="/guias/mejor-dia-para-repostar/">¿Cuál es el mejor día para echar gasolina?</a></li>
+      <li><a href="/guias/impuestos-de-la-gasolina/">Qué impuestos pagas en cada litro</a>, y por qué en Canarias es más barato.</li>
+      <li><a href="/guias/gasolineras-desatendidas/">Gasolineras desatendidas</a>: cómo funciona el «lleno» con preautorización.</li>
+      <li><a href="/guias/compensa-desviarse-para-repostar/">¿Compensa desviarse para repostar?</a> y la <a href="/compensa-desviarse/">calculadora de desvío</a>.</li>
+    </ul>
   </article>
 
   <AdSlot position="bottom" />

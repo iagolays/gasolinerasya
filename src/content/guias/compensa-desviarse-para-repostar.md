@@ -45,3 +45,9 @@ Con un coche que gaste entre 6 y 7 litros a los 100 km, **cada kilómetro extra 
 ## Hazlo con tus números
 
 Usa la [calculadora de desvío](/compensa-desviarse/): pon los litros, los precios y los kilómetros, y te dice al momento si compensa y hasta cuántos kilómetros merece la pena ir. Para encontrar la más barata, mira [gasolineras cerca de mí](/cerca/).
+
+## Fuentes
+
+- [Base de datos de consumo y emisiones de turismos](https://coches.idae.es/) (IDAE).
+- [Euros por 100 km](https://www.miteco.gob.es/es/energia/hidrocarburos-nuevos-combustibles/euros-por-100-km.html): comparación oficial del coste de gasolina, gasóleo, GLP, GNC y electricidad (Ministerio para la Transición Ecológica).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.

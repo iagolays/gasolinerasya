@@ -39,3 +39,12 @@ Son unos **3,60 € menos cada 100 km**: con 15.000 km al año, más de 500 €.
 - Pierdes espacio en el maletero o la rueda de repuesto.
 
 Si te interesa comparar con otras opciones, mira [gasolina o diésel](/guias/gasolina-o-diesel/).
+
+## Fuentes
+
+- [Distintivo ambiental](https://www.dgt.es/nuestros-servicios/tu-vehiculo/tus-vehiculos/distintivo-ambiental/): criterios de las etiquetas CERO, ECO, C y B (Dirección General de Tráfico).
+- [Real Decreto 61/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-2779), por el que se determinan las especificaciones de gasolinas, gasóleos, fuelóleos y gases licuados del petróleo (BOE, texto consolidado).
+- [Euros por 100 km](https://www.miteco.gob.es/es/energia/hidrocarburos-nuevos-combustibles/euros-por-100-km.html): comparación oficial del coste de gasolina, gasóleo, GLP, GNC y electricidad (Ministerio para la Transición Ecológica).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

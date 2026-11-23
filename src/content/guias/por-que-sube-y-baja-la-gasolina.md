@@ -45,3 +45,10 @@ No puedes controlar el petróleo ni los impuestos, pero sí **dónde repostas**.
 - Busca la más barata de tu zona en [gasolineras cerca de mí](/cerca/).
 - Comprueba si [compensa desviarse](/compensa-desviarse/) para llegar a una más barata.
 - Sigue la evolución del precio en la [portada](/#historico).
+
+## Fuentes
+
+- [Weekly Oil Bulletin](https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en): boletín petrolero semanal con los precios de los carburantes en la UE (Comisión Europea).
+- [Informe de la CNMC sobre márgenes en el sector de carburantes](https://cnmc.es/prensa/informe-margenes-20260630) (junio de 2026).
+- [Ley 38/1992, de Impuestos Especiales](https://www.boe.es/buscar/act.php?id=BOE-A-1992-28741): impuesto sobre hidrocarburos (artículo 50) y ámbito territorial, que excluye Canarias, Ceuta y Melilla (artículo 3) (BOE).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.

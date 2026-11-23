@@ -34,3 +34,12 @@ Lo medimos cada hora con los datos oficiales en el informe [low cost frente a tr
 - Si tu coche requiere un carburante que no venden (por ejemplo, gasolina 98 o GLP): no todas lo tienen.
 
 En resumen: si la low cost te pilla de camino, puedes repostar en ella con tranquilidad. Encuentra las de tu zona en [gasolineras cerca de mí](/cerca/).
+
+## Fuentes
+
+- [Real Decreto 61/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-2779), por el que se determinan las especificaciones de gasolinas, gasóleos, fuelóleos y gases licuados del petróleo (BOE, texto consolidado).
+- [Informe anual de supervisión de la distribución de carburantes en estaciones de servicio 2020](https://www.cnmc.es/prensa/anual-2020-carburantes-20210618) (CNMC).
+- [Exolum](https://exolum.com/) (antigua CLH): red de oleoductos y almacenamiento de productos petrolíferos en España.
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

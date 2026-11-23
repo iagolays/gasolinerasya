@@ -63,3 +63,11 @@ Una regla útil: **un coche que admite E10 también admite E5, y uno que admite 
 ## ¿Cambia el precio?
 
 En la web mostramos los precios de la **gasolina 95 E5**, la **98 E5**, el **gasóleo A**, el **gasóleo premium**, el **GLP**, el **GNC** y el **AdBlue**, que son los que publica el Ministerio para todas las gasolineras de España. Compara las de tu zona desde la [portada](/) o en [gasolineras cerca de mí](/cerca/).
+
+## Fuentes
+
+- [Real Decreto 639/2016](https://www.boe.es/buscar/act.php?id=BOE-A-2016-11738), artículo 7: etiquetado de compatibilidad de combustibles en surtidores y vehículos según la norma EN 16942, aplicable desde el 12 de octubre de 2018 (BOE).
+- [Real Decreto 61/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-2779), por el que se determinan las especificaciones de gasolinas, gasóleos, fuelóleos y gases licuados del petróleo (BOE, texto consolidado).
+- [Real Decreto 1088/2010](https://www.boe.es/buscar/act.php?id=BOE-A-2010-13704), que modifica el anterior en las especificaciones de gasolinas y gasóleos y el uso de biocarburantes (BOE).
+- [Infraestructura para los combustibles alternativos](https://industria.gob.es/Calidad-Industrial/seguridadindustrial/instalacionesindustriales/infraesctructuras-combustibles/Paginas/combustibles-alternativos.aspx) (Ministerio de Industria).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.

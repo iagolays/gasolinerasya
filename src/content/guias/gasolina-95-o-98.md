@@ -35,3 +35,10 @@ La gasolina 98 suele costar **entre 15 y 20 céntimos más por litro** que la 95
 Las gasolinas que ves en España son normalmente **E5**: llevan hasta un 5 % de bioetanol. La etiqueta del surtidor (un círculo con E5 o E10) te indica qué es. Prácticamente todos los coches de gasolina modernos aceptan E5; para el E10, consulta el manual.
 
 Relacionado: [diésel o diésel premium](/guias/diesel-o-diesel-premium/) y [¿es peor la gasolina de las low cost?](/guias/gasolineras-low-cost-calidad/).
+
+## Fuentes
+
+- [Real Decreto 61/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-2779), por el que se determinan las especificaciones de gasolinas, gasóleos, fuelóleos y gases licuados del petróleo (BOE, texto consolidado).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

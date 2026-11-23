@@ -40,3 +40,9 @@ Repítelo dos o tres veces para tener una media fiable. El dato del ordenador de
 ## Para qué te sirve
 
 Con tu consumo real puedes calcular cuánto te cuesta de verdad cada viaje con la [calculadora de gasolina](/calculadora-gasolina/), saber si te [compensa desviarte](/compensa-desviarse/) a una gasolinera más barata o comparar si te conviene [gasolina o diésel](/guias/gasolina-o-diesel/). Y si quieres bajarlo, mira [cómo ahorrar gasolina](/guias/como-ahorrar-gasolina/).
+
+## Fuentes
+
+- [Base de datos de consumo y emisiones de turismos](https://coches.idae.es/) (IDAE).
+- [Manual de conducción eficiente para vehículos turismo](https://www.miteco.gob.es/es/ceneam/programas-de-educacion-ambiental/hogares-verdes/conduccion_eficiente_idae_tcm30-171577.pdf) (IDAE, PDF alojado por el Ministerio para la Transición Ecológica).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.

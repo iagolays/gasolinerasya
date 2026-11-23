@@ -35,3 +35,11 @@ El diésel premium suele costar **entre 10 y 15 céntimos más por litro** que e
 El gasóleo de las gasolineras low cost cumple la misma especificación que el de las grandes marcas. Lo explicamos en [¿es peor la gasolina de las low cost?](/guias/gasolineras-low-cost-calidad/).
 
 Si tu coche usa AdBlue, te interesa también [qué es el AdBlue y dónde comprarlo](/guias/adblue-que-es/).
+
+## Fuentes
+
+- [Real Decreto 61/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-2779), por el que se determinan las especificaciones de gasolinas, gasóleos, fuelóleos y gases licuados del petróleo (BOE, texto consolidado).
+- [Real Decreto 1088/2010](https://www.boe.es/buscar/act.php?id=BOE-A-2010-13704), que modifica el anterior en las especificaciones de gasolinas y gasóleos y el uso de biocarburantes (BOE).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

@@ -23,6 +23,68 @@ for (const p of provinces) {
 const updatedAt = getUpdatedAt();
 const g95 = national.gasolina95?.avg ?? 1.7;
 
+// Cifras de referencia fijas (mediana de península y Baleares del 23-11-2026) para los ejemplos resueltos:
+// así el texto no cambia cada hora y se puede comprobar a mano.
+const REF_DATE = '23-11-2026';
+const REF95 = 1.569;
+const REFD = 1.808;
+const nf2 = new Intl.NumberFormat('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const nf1 = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 });
+/** 1002.36 → "1.002,36 €" (es-ES no agrupa las cifras de 4 dígitos) */
+const eur = (n: number) => `${nf2.format(n).replace(/^(\d)(\d{3}),/, '$1.$2,')} €`;
+const lit = (n: number) => `${nf1.format(n)} l`;
+
+// Ejemplo 1: viaje de 360 km en gasolina, ida y vuelta, entre cuatro
+const e1 = { km: 360, cons: 6.5 };
+const e1Liters = (e1.km * e1.cons) / 100;
+const e1Cost = e1Liters * REF95;
+// Ejemplo 2: ir al trabajo en diésel, 40 km al día, 21 días al mes
+const e2 = { kmMonth: 40 * 21, cons: 5.5 };
+const e2Liters = (e2.kmMonth * e2.cons) / 100;
+const e2Month = e2Liters * REFD;
+// Ejemplo 3: llenar 45 litros de gasolina 95 y autonomía con 6,5 l/100 km
+const e3 = { tank: 45, cons: 6.5 };
+
+// Consumos reales orientativos por tipo de vehículo (l/100 km). Rangos aproximados, no homologados.
+const CONSUMOS: Array<{ tipo: string; fuel: 'g' | 'd'; min: number; max: number }> = [
+  { tipo: 'Moto o scooter de 125 cc', fuel: 'g', min: 2.5, max: 3.5 },
+  { tipo: 'Utilitario de gasolina', fuel: 'g', min: 5.5, max: 7 },
+  { tipo: 'Compacto de gasolina', fuel: 'g', min: 6, max: 7.5 },
+  { tipo: 'Compacto diésel', fuel: 'd', min: 4.5, max: 6 },
+  { tipo: 'Híbrido no enchufable (gasolina)', fuel: 'g', min: 4, max: 5.5 },
+  { tipo: 'SUV o monovolumen de gasolina', fuel: 'g', min: 7, max: 9 },
+  { tipo: 'SUV o monovolumen diésel', fuel: 'd', min: 5.5, max: 7 },
+  { tipo: 'Furgoneta diésel', fuel: 'd', min: 7, max: 9.5 },
+];
+
+const FAQ: Array<{ q: string; a: string }> = [
+  {
+    q: '¿Qué precio usa la calculadora?',
+    a: 'Por defecto, el precio medio de hoy del carburante elegido en toda España o en la provincia que selecciones, calculado con los precios que publica el Ministerio para cada gasolinera. Puedes escribir encima el precio exacto de la gasolinera donde vas a repostar.',
+  },
+  {
+    q: '¿Qué consumo pongo si no sé el de mi coche?',
+    a: 'Usa la tabla de consumos orientativos de esta página como punto de partida y súmale algo si conduces mucho por ciudad. Lo mejor es medir tu consumo real con el método del depósito lleno: litros repostados ÷ kilómetros recorridos × 100.',
+  },
+  {
+    q: '¿Por qué el resultado no coincide con lo que gasto de verdad?',
+    a: 'Casi siempre es por el consumo. El dato del catálogo (WLTP) se mide en laboratorio y el real suele ser mayor, sobre todo con trayectos cortos, frío, aire acondicionado o velocidades altas. El precio también cambia de una gasolinera a otra.',
+  },
+  {
+    q: '¿Cómo reparto el gasto de un viaje compartido?',
+    a: 'Indica las personas que vais en el coche y marca «ida y vuelta» si procede. La calculadora divide el coste total, peajes incluidos, entre todos. No incluye el desgaste del coche, el seguro ni el aparcamiento.',
+  },
+  {
+    q: '¿Sirve para coches de GLP?',
+    a: 'Sí: elige GLP como carburante y pon el consumo en litros de GLP, que suele ser un 15–25 % mayor que el de gasolina del mismo coche. Para coches eléctricos no sirve, porque la energía se paga por kWh.',
+  },
+];
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+
 const title = 'Calculadora de gasolina: coste de un viaje y del depósito';
 const description = 'Calcula cuánto cuesta un viaje en gasolina o diésel con el precio de hoy en tu provincia: coste total, por persona y por kilómetro, y cuánto sale llenar el depósito.';
 ---
@@ -31,14 +93,17 @@ const description = 'Calcula cuánto cuesta un viaje en gasolina o diésel con e
   description={description}
   path="/calculadora-gasolina/"
   breadcrumbs={[{ name: 'Calculadora de gasolina', path: '/calculadora-gasolina/' }]}
-  jsonLd={{
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: 'Calculadora de gasolina',
-    applicationCategory: 'UtilitiesApplication',
-    operatingSystem: 'Any',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-  }}
+  jsonLd={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Calculadora de gasolina',
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Any',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+    },
+    faqLd,
+  ]}
 >
   <header class="page-head">
     <h1>Calculadora de gasolina</h1>
@@ -123,22 +188,104 @@ const description = 'Calcula cuánto cuesta un viaje en gasolina o diésel con e
 
   <AdSlot position="inline" />
 
-  <section class="section article" aria-labelledby="como">
-    <h2 id="como">Cómo se calcula</h2>
+  <section class="section article" aria-labelledby="que">
+    <h2 id="que">Qué calcula esta calculadora</h2>
+    <p>Con cuatro datos (carburante, precio por litro, consumo y distancia) te da tres respuestas:</p>
+    <ul>
+      <li><strong>Coste de un viaje:</strong> los litros que vas a gastar, lo que cuestan con los peajes, el coste por persona si compartís coche y el coste por kilómetro y cada 100 km.</li>
+      <li><strong>Coste de llenar el depósito:</strong> lo que pagarás por los litros que vas a echar y la autonomía aproximada que te dan con tu consumo.</li>
+      <li><strong>Gasto mensual y anual:</strong> lo que te cuesta el carburante según los kilómetros que haces al mes.</li>
+    </ul>
     <p>
-      <strong>Litros del viaje</strong> = kilómetros × consumo ÷ 100. <strong>Coste</strong> = litros × precio por litro + peajes.
+      El precio se rellena solo con la media de hoy ({price(g95)} €/l para la gasolina 95 en España) y cambia al elegir otro carburante
+      o una provincia. Todo se calcula en tu navegador: no guardamos nada de lo que escribes.
+    </p>
+
+    <h2 id="como">Las fórmulas</h2>
+    <ul>
+      <li><strong>Litros del viaje</strong> = kilómetros × consumo (l/100 km) ÷ 100. Si marcas ida y vuelta, los kilómetros se duplican.</li>
+      <li><strong>Coste del viaje</strong> = litros × precio por litro + peajes. <strong>Por persona</strong> = coste ÷ personas.</li>
+      <li><strong>Coste cada 100 km</strong> = consumo × precio por litro.</li>
+      <li><strong>Llenar el depósito</strong> = litros que echas × precio por litro. <strong>Autonomía</strong> = litros ÷ consumo × 100.</li>
+      <li><strong>Gasto al mes</strong> = kilómetros al mes × consumo ÷ 100 × precio. <strong>Al año</strong> = gasto al mes × 12.</li>
+    </ul>
+    <p>
       Por ejemplo, 300 km con un coche que gasta 6,5 l/100 km son 19,5 litros; con la gasolina 95 a la media de hoy
       ({price(g95)} €/l) cuestan {(19.5 * g95).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €.
+    </p>
+
+    <h2 id="ejemplos">Tres ejemplos resueltos</h2>
+    <p>
+      Con precios de referencia del {REF_DATE} (mediana de península y Baleares): gasolina 95 a {price(REF95)} €/l y gasóleo A a {price(REFD)} €/l.
+    </p>
+    <h3>1. Un viaje de {e1.km} km entre cuatro</h3>
+    <p>
+      Un compacto de gasolina que gasta {nf1.format(e1.cons)} l/100 km hace un viaje de {e1.km} km (más o menos lo que hay de Madrid a Valencia).
+      Gasta {e1.km} × {nf1.format(e1.cons)} ÷ 100 = <strong>{lit(e1Liters)}</strong>, que a {price(REF95)} €/l cuestan <strong>{eur(e1Cost)}</strong>.
+      Ida y vuelta son {eur(e1Cost * 2)}; entre cuatro personas, {eur((e1Cost * 2) / 4)} cada una, sin contar peajes.
+    </p>
+    <h3>2. Ir al trabajo en diésel</h3>
+    <p>
+      Un diésel que gasta {nf1.format(e2.cons)} l/100 km recorre 40 km al día (ida y vuelta) durante 21 días al mes: {e2.kmMonth} km.
+      Son {lit(e2Liters)} al mes, que a {price(REFD)} €/l cuestan <strong>{eur(e2Month)} al mes</strong> y <strong>{eur(e2Month * 12)} al año</strong>.
+      Si encuentra una gasolinera 10 céntimos más barata en su camino, ahorra {eur(e2Liters * 0.1 * 12)} al año sin cambiar nada más.
+    </p>
+    <h3>3. Llenar {e3.tank} litros de gasolina 95</h3>
+    <p>
+      Echar {e3.tank} litros a {price(REF95)} €/l cuesta <strong>{eur(e3.tank * REF95)}</strong>. Con un consumo de {nf1.format(e3.cons)} l/100 km,
+      esos litros dan para unos <strong>{Math.round((e3.tank / e3.cons) * 100)} km</strong>, a {eur(e3.cons * REF95)} cada 100 km.
+    </p>
+
+    <h2 id="consumos">Consumos de referencia por tipo de vehículo</h2>
+    <p>
+      Si no conoces tu consumo, estos rangos te sirven para empezar. Son <strong>orientativos</strong>: consumos reales aproximados en uso
+      mixto, no cifras homologadas, y cambian mucho con el motor, la carga, el tráfico y la forma de conducir. El coste cada 100 km usa los
+      precios de referencia del {REF_DATE}.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Vehículo</th><th>Consumo real (orientativo)</th><th>Coste cada 100 km</th></tr></thead>
+        <tbody>
+          {CONSUMOS.map((c) => {
+            const p = c.fuel === 'g' ? REF95 : REFD;
+            return (
+              <tr>
+                <td>{c.tipo}</td>
+                <td>{nf1.format(c.min)}–{nf1.format(c.max)} l/100 km</td>
+                <td>{eur(c.min * p)} – {eur(c.max * p)}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Para afinar, mide el tuyo: llena el depósito, pon el parcial a cero y en el siguiente lleno divide los litros entre los kilómetros y
+      multiplica por 100. Te lo explicamos en <a href="/guias/consumo-real-vs-homologado/">consumo real frente a homologado</a>.
     </p>
     <p>
       El precio medio cambia mucho de una gasolinera a otra: en la misma ciudad puede haber 20 céntimos de diferencia. Para un cálculo más
       exacto, busca el precio de la gasolinera donde vas a repostar en <a href="/cerca/">gasolineras cerca de mí</a> y escríbelo en el
-      campo de precio.
+      campo de precio. ¿Hay una más barata un poco más lejos? Calcula si <a href="/compensa-desviarse/">compensa desviarse</a>.
     </p>
-    <p>
-      ¿Hay una más barata un poco más lejos? Calcula si <a href="/compensa-desviarse/">compensa desviarse</a>. Y si quieres gastar menos,
-      mira <a href="/guias/como-ahorrar-gasolina/">cómo ahorrar gasolina</a>.
-    </p>
+
+    <h2 id="faq">Preguntas frecuentes</h2>
+    {FAQ.map((f) => (
+      <>
+        <h3>{f.q}</h3>
+        <p>{f.a}</p>
+      </>
+    ))}
+
+    <h2 id="guias">Guías relacionadas</h2>
+    <ul>
+      <li><a href="/guias/como-ahorrar-gasolina/">Cómo ahorrar gasolina</a>: consejos para pagar menos por litro y gastar menos litros.</li>
+      <li><a href="/guias/consumo-real-vs-homologado/">Consumo real frente a homologado</a>: por qué gastas más de lo que dice el catálogo.</li>
+      <li><a href="/guias/gasolina-o-diesel/">¿Gasolina o diésel?</a>: la cuenta según los kilómetros que haces.</li>
+      <li><a href="/guias/coche-electrico-o-gasolina/">¿Coche eléctrico o de gasolina?</a>: el coste cada 100 km de cada uno.</li>
+      <li><a href="/guias/glp-autogas/">GLP (autogás)</a>: cuánto se ahorra de verdad con un coche bifuel.</li>
+      <li><a href="/informes/cuanto-cuesta-llenar-el-deposito/">¿Cuánto cuesta llenar el depósito hoy?</a>: precios por tamaño de depósito y provincia.</li>
+    </ul>
   </section>
 
   <section class="section" aria-labelledby="mas">

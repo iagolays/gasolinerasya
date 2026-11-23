@@ -46,3 +46,12 @@ Por eso sus gasolineras salen casi siempre como las más baratas de España, y p
 ## ¿Y las diferencias entre gasolineras?
 
 Los impuestos son iguales en toda la península, así que **la diferencia de precio entre dos gasolineras de la misma zona sale entera del margen y de los costes** de cada una. Esa diferencia puede ser de 10, 20 o más céntimos por litro, y es la parte que sí puedes controlar eligiendo dónde repostas. Compara las de tu zona en [gasolineras cerca de mí](/cerca/).
+
+## Fuentes
+
+- [Ley 38/1992, de Impuestos Especiales](https://www.boe.es/buscar/act.php?id=BOE-A-1992-28741): impuesto sobre hidrocarburos (artículo 50) y ámbito territorial, que excluye Canarias, Ceuta y Melilla (artículo 3) (BOE).
+- [Impuesto sobre Hidrocarburos: base imponible y tipos de gravamen](https://sede.agenciatributaria.gob.es/Sede/impuestos-especiales-medioambientales/impuestos-especiales-fabricacion/hidrocarburos/base-imponible-tipos-gravamen.html) (Agencia Tributaria).
+- [Ley 37/1992, del Impuesto sobre el Valor Añadido](https://www.boe.es/buscar/act.php?id=BOE-A-1992-28740) (BOE).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

@@ -58,3 +58,9 @@ Depende de la póliza. Muchas incluyen la **asistencia en carretera** (la grúa 
 Si te equivocas de combustible: no arranques, aparta el coche empujándolo, llama a la asistencia y pide que vacíen el depósito. Es una molestia y un gasto, pero mucho menor que el de una bomba o unos inyectores nuevos.
 
 ¿Dudas entre comprar un coche de gasolina o diésel? Lo comparamos según los kilómetros que hagas en [¿gasolina o diésel?](/guias/gasolina-o-diesel/).
+
+## Fuentes
+
+- [Real Decreto 639/2016](https://www.boe.es/buscar/act.php?id=BOE-A-2016-11738), artículo 7: etiquetado de compatibilidad de combustibles en surtidores y vehículos según la norma EN 16942, aplicable desde el 12 de octubre de 2018 (BOE).
+- [Real Decreto 61/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-2779), por el que se determinan las especificaciones de gasolinas, gasóleos, fuelóleos y gases licuados del petróleo (BOE, texto consolidado).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.

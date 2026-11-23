@@ -68,3 +68,11 @@ Si tienes cerca varias gasolineras de marcas distintas, puede tener sentido apun
 Antes que cualquier descuento, lo que más dinero ahorra es saber qué gasolinera es la más barata cerca de ti. En la página de cada provincia y municipio tienes la lista ordenada por precio, actualizada cada hora con los datos oficiales del Ministerio, y también puedes buscar [gasolineras cerca de mí](/cerca/).
 
 Más ideas en [cómo ahorrar gasolina: 12 consejos que funcionan](/guias/como-ahorrar-gasolina/) y en el informe [low cost frente a gasolineras tradicionales](/informes/low-cost-vs-tradicionales/).
+
+## Fuentes
+
+- [Informe de la CNMC sobre márgenes en el sector de carburantes](https://cnmc.es/prensa/informe-margenes-20260630) (junio de 2026).
+- [Supervisión de precios de carburantes](https://www.cnmc.es/ambitos-de-actuacion/energia/mercado-petroleo-biocarburantes) (CNMC).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

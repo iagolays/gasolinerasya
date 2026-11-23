@@ -32,3 +32,11 @@ Entre la gasolinera más barata y la más cara de un mismo municipio suele haber
 4. Comprueba si te [compensa desviarte](/compensa-desviarse/) unos kilómetros.
 
 Más consejos en [cómo ahorrar gasolina](/guias/como-ahorrar-gasolina/).
+
+## Fuentes
+
+- [Weekly Oil Bulletin](https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en): boletín petrolero semanal con los precios de los carburantes en la UE (Comisión Europea).
+- [Supervisión de precios de carburantes](https://www.cnmc.es/ambitos-de-actuacion/energia/mercado-petroleo-biocarburantes) (CNMC).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).
