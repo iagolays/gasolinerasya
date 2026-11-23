@@ -1,0 +1,310 @@
+---
+// Informe mensual de noviembre de 2026. ESTÁTICO: las cifras salen de un snapshot fijo
+// (_noviembre-2026.json, generado el 2026-11-23 desde data/history/history.json) y el texto
+// editorial lleva los números escritos a mano. No se recalcula con cada build.
+import Base from '../../layouts/Base.astro';
+import AdSlot from '../../components/ads/AdSlot.astro';
+import DiffBars from '../../components/DiffBars.astro';
+import LineChart from '../../components/informes/LineChart.astro';
+import { absUrl } from '../../components/seo/schema';
+import { SITE } from '../../site.config';
+import { FUELS, FUEL_ORDER } from '../../lib/fuels';
+import { OWN_TAX_PROVINCE_IDS } from '../../lib/data';
+import { splitOwnTaxes, type DayValue } from '../../lib/reports';
+import type { FuelKey } from '../../lib/types';
+import { pctDiff, price } from '../../components/util/format';
+import snapshot from './_noviembre-2026.json';
+
+const path = '/informes/noviembre-2026/';
+const PUBLISHED = '2026-11-23';
+const title = 'Precio de la gasolina en noviembre de 2026: la 95 baja 19 céntimos y el diésel se aleja';
+const description =
+  'Informe mensual con datos propios del 26 de octubre al 23 de noviembre de 2026: la gasolina 95 cae de 1,764 a 1,575 €/l, el gasóleo A de 1,919 a 1,805 €/l y el diésel ya cuesta 23 céntimos más que la gasolina.';
+
+type Pair = [number, number];
+type SnapProvince = { id: string; name: string; slug: string } & Partial<Record<FuelKey, Pair>>;
+
+const national = Object.fromEntries(
+  Object.entries(snapshot.national).map(([f, pts]) => [f, (pts as Array<[string, number]>).map(([date, value]) => ({ date, value }))]),
+) as Partial<Record<FuelKey, DayValue[]>>;
+const s95 = national.gasolina95!;
+const sDiesel = national.diesel!;
+const gap = sDiesel.map((p, i) => ({ date: p.date, value: Math.round((p.value - s95[i]!.value) * 1000) / 1000 }));
+
+// Tabla resumen: primer y último día de cada carburante.
+const summary = FUEL_ORDER.filter((f) => national[f]?.length).map((f) => {
+  const s = national[f]!;
+  const a = s[0]!.value;
+  const b = s[s.length - 1]!.value;
+  return { f, a, b, diff: b - a, pct: pctDiff(b, a) };
+});
+
+// Provincias: variación del 26-10 al 23-11, separando las de fiscalidad propia.
+const provinces = snapshot.provinces as SnapProvince[];
+function changes(f: FuelKey) {
+  const list = provinces
+    .filter((p) => p[f])
+    .map((p) => ({ id: p.id, name: p.name, path: `/provincia/${p.slug}/`, from: p[f]![0], to: p[f]![1], diff: Math.round((p[f]![1] - p[f]![0]) * 1000) / 1000 }))
+    .sort((a, b) => a.diff - b.diff || a.name.localeCompare(b.name, 'es'));
+  return splitOwnTaxes(list, OWN_TAX_PROVINCE_IDS);
+}
+const c95 = changes('gasolina95');
+const cDiesel = changes('diesel');
+
+const fmtC = new Intl.NumberFormat('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const ct = (d: number) => `${d > 0 ? '+' : d < 0 ? '−' : ''}${fmtC.format(Math.abs(d) * 100)}`;
+
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  datePublished: PUBLISHED,
+  dateModified: PUBLISHED,
+  inLanguage: 'es-ES',
+  mainEntityOfPage: absUrl(path),
+  author: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+  publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
+  temporalCoverage: `${snapshot.from}/${snapshot.to}`,
+};
+---
+<Base
+  title={title}
+  description={description}
+  path={path}
+  ogType="article"
+  jsonLd={articleLd}
+  breadcrumbs={[{ name: 'Informes', path: '/informes/' }, { name: 'Noviembre de 2026', path }]}
+>
+  <article class="article">
+    <h1>Precio de la gasolina en noviembre de 2026: la 95 baja 19 céntimos y el diésel se aleja</h1>
+    <p class="article-meta">
+      {SITE.name} · Publicado el <time datetime={PUBLISHED}>23 de noviembre de 2026</time> · Datos del 26-10 al 23-11-2026
+      ({snapshot.days} días). Informe cerrado: las cifras no se actualizan.
+    </p>
+    <p class="lead">
+      En las cuatro semanas que llevamos guardando el precio de cada día, la gasolina 95 se ha abaratado casi 19 céntimos por litro
+      y el gasóleo A, algo más de 11. Como la gasolina ha bajado mucho más que el diésel, la distancia entre los dos se ha
+      ensanchado hasta los 23 céntimos, una situación que va contra lo que ha sido habitual en España durante años.
+    </p>
+
+    <AdSlot position="top" />
+
+    <h2>Resumen en cifras</h2>
+    <p>
+      Todas las cifras de este informe son <strong>medianas</strong>: el precio que deja la mitad de las gasolineras por encima y
+      la otra mitad por debajo. Las calculamos cada día con los precios que todas las estaciones de servicio de España comunican
+      al Ministerio, y las guardamos en nuestro propio histórico. Comparamos el primer día que tenemos, el lunes 26 de octubre,
+      con el lunes 23 de noviembre.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Carburante</th><th class="n">26 oct</th><th class="n">23 nov</th><th class="n">Variación</th><th class="n">%</th></tr>
+        </thead>
+        <tbody>
+          {summary.map((r) => (
+            <tr>
+              <td>{FUELS[r.f].label}</td>
+              <td class="n">{price(r.a)}</td>
+              <td class="n">{price(r.b)}</td>
+              <td class="n">{ct(r.diff)} cts</td>
+              <td class="n">{r.pct > 0 ? "+" : "−"}{fmtC.format(Math.abs(r.pct))}&nbsp;%</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">Precios en €/l, salvo el gas natural (GNC), en €/kg. Mediana de todas las gasolineras de venta al público de España.</p>
+    <p>
+      En la práctica, llenar un depósito de 50 litros de gasolina 95 costaba 88,20 € a finales de octubre y hoy cuesta
+      78,75 €: 9,45 € menos. Con gasóleo A el mismo depósito ha pasado de 95,95 € a 90,25 €, un ahorro de 5,70 €.
+    </p>
+
+    <h2>Gasolina 95: cuatro semanas de bajadas, cada vez más rápidas</h2>
+    <p>
+      La mediana de la gasolina 95 empezó el periodo en 1,764 €/l y lo cierra en 1,575 €/l, un 10,7 % menos. Lo llamativo no es
+      solo cuánto ha bajado, sino cómo: no ha habido ni un solo día de subida en la mediana nacional y el ritmo se ha ido
+      acelerando. En la primera semana (del 26 de octubre al 2 de noviembre) bajó 1,9 céntimos; en la segunda, 4,6; en la
+      tercera, 6,0, y en la última, 6,4. Los descensos se concentran en saltos de varios céntimos en pocos días, como el del
+      12 al 14 de noviembre (de 1,679 a 1,639 €/l), separados por días de calma, sobre todo en fin de semana.
+    </p>
+
+    <LineChart
+      id="nov-95-diesel"
+      title="Precio mediano diario de la gasolina 95 y el gasóleo A en España, del 26 de octubre al 23 de noviembre de 2026"
+      caption="La gasolina 95 baja de 1,764 a 1,575 €/l y el gasóleo A de 1,919 a 1,805 €/l. El diésel incluso sube un céntimo en la primera semana. Mediana diaria de todas las gasolineras de España."
+      series={[
+        { label: 'Gasolina 95', points: s95 },
+        { label: 'Gasóleo A', points: sDiesel },
+      ]}
+    />
+
+    <h2>El gasóleo A baja menos y más tarde</h2>
+    <p>
+      El diésel ha seguido la misma dirección, pero con menos fuerza: de 1,919 a 1,805 €/l, un 5,9 %. Además, arrancó al revés.
+      Durante la primera semana subió hasta 1,935 €/l (29 y 30 de octubre) y el 2 de noviembre seguía un céntimo por encima de
+      donde empezó. A partir de ahí también se apuntó a las bajadas, que igualmente fueron ganando ritmo: 3,0 céntimos en la
+      segunda semana, 4,0 en la tercera y 5,4 en la cuarta. Es decir, en las dos últimas semanas el diésel ha bajado a un ritmo
+      parecido al de la gasolina, pero arrastra el retraso del principio.
+    </p>
+
+    <h2>El diésel ya cuesta 23 céntimos más que la gasolina</h2>
+    <p>
+      La consecuencia es que el diferencial entre los dos carburantes no ha dejado de crecer. El 26 de octubre el litro de gasóleo A
+      costaba 15,5 céntimos más que el de gasolina 95; el 5 de noviembre la diferencia llegó por primera vez a los 20 céntimos y el 19
+      tocó su máximo, 23,4. Hoy está en 23,0 céntimos.
+    </p>
+
+    <LineChart
+      id="nov-gap"
+      format="cents"
+      title="Diferencia diaria entre el precio mediano del gasóleo A y el de la gasolina 95, en céntimos por litro"
+      caption="El gasóleo A pasa de costar 15,5 céntimos más que la gasolina 95 a costar 23,0 céntimos más. Máximo: 23,4 céntimos el 19 de noviembre."
+      series={[{ label: 'Diésel − gasolina 95', points: gap }]}
+    />
+
+    <p>
+      Esto es anómalo si se mira con perspectiva. Durante muchos años lo normal en España fue lo contrario: el diésel era el
+      carburante barato, en buena parte porque el impuesto especial que soporta cada litro de gasóleo ha sido tradicionalmente
+      más bajo que el de la gasolina (lo explicamos en <a href="/guias/impuestos-de-la-gasolina/">qué impuestos pagas en cada
+      litro</a>). Que hoy el gasóleo cueste más no significa que los impuestos hayan cambiado: significa que el precio del propio
+      producto, antes de impuestos, está bastante más caro para el diésel que para la gasolina. Para quien duda entre los dos
+      motores, el dato importa: con 23 céntimos de diferencia, el menor consumo del diésel compensa mucho menos (hacemos las cuentas
+      en <a href="/guias/gasolina-o-diesel/">¿gasolina o diésel?</a>).
+    </p>
+
+    <AdSlot position="inline" />
+
+    <h2>Por provincias: quién ha bajado más y quién menos</h2>
+    <p>
+      Dejando aparte Canarias, Ceuta y Melilla, la gasolina 95 ha bajado en las 48 provincias restantes, con una variación mediana de
+      19 céntimos. Nueve provincias han superado los 20 céntimos de bajada: encabezan la lista Zaragoza (de 1,780 a 1,555 €/l,
+      −22,5 céntimos), Barcelona (−22,0), Pontevedra (−21,7), A Coruña (−21,0) y Navarra (−20,6). En el otro extremo están
+      Lleida (−15,8), Teruel (−16,3) y Tarragona (−17,0).
+    </p>
+    <p>
+      El caso de Lleida es curioso: el 26 de octubre era la provincia peninsular con la gasolina 95 y el diésel más baratos, y es
+      la que menos ha bajado en los dos carburantes. Ha perdido el primer puesto en favor de Navarra, que hoy tiene la 95 a 1,539 €/l
+      y el diésel a 1,758 €/l. Las provincias que partían más baratas han tenido, en general, menos margen para bajar, y la
+      distancia entre la más barata y la más cara se ha estrechado: en gasolina 95 ha pasado de 13,2 a 12,0 céntimos y en diésel, de
+      15,4 a 12,6. Illes Balears sigue siendo, con diferencia, la más cara en los dos.
+    </p>
+
+    <h3>Variación de la gasolina 95 por provincia (26-10 a 23-11)</h3>
+    <p class="small muted">Céntimos por litro. Península e Illes Balears. Canarias, Ceuta y Melilla, más abajo.</p>
+    <DiffBars label="Variación del precio mediano de la gasolina 95 por provincia" items={c95.main.map((x) => ({ name: x.name, path: x.path, diff: x.diff }))} />
+
+    <p>
+      En gasóleo A las diferencias entre provincias son mayores. Zamora (−16,0 céntimos), León (−15,0), Burgos (−14,4), Valladolid
+      (−14,1) y Cádiz (−14,0) son las que más lo han abaratado, con Castilla y León muy presente en lo alto de la lista. Las que
+      menos: Lleida (−5,3), Almería (−7,0), Córdoba (−7,4), Ciudad Real (−7,7) y Valencia (−8,0). La variación mediana por provincia
+      ha sido de 11,6 céntimos.
+    </p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Gasóleo A</th><th class="n">26 oct</th><th class="n">23 nov</th><th class="n">Variación</th></tr>
+        </thead>
+        <tbody>
+          <tr><th colspan="4">Las cinco que más bajan</th></tr>
+          {cDiesel.main.slice(0, 5).map((x) => (
+            <tr><td><a href={x.path}>{x.name}</a></td><td class="n">{price(x.from)}</td><td class="n">{price(x.to)}</td><td class="n">{ct(x.diff)} cts</td></tr>
+          ))}
+          <tr><th colspan="4">Las cinco que menos bajan</th></tr>
+          {cDiesel.main.slice(-5).reverse().map((x) => (
+            <tr><td><a href={x.path}>{x.name}</a></td><td class="n">{price(x.from)}</td><td class="n">{price(x.to)}</td><td class="n">{ct(x.diff)} cts</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Gasolina 98 y diésel premium: las diferencias se mantienen</h2>
+    <p>
+      Los carburantes de gama alta se han movido casi en paralelo a sus hermanos básicos. La gasolina 98 ha bajado de 1,929 a
+      1,745 €/l (−18,4 céntimos), así que el sobreprecio frente a la 95 apenas ha cambiado: de 16,5 a 17,0 céntimos por litro.
+      El diésel premium ha pasado de 2,019 a 1,905 €/l (−11,4 céntimos) y sigue costando exactamente 10 céntimos más que el
+      gasóleo A, igual que hace un mes. Si te preguntas si compensa pagar esa diferencia, lo analizamos en
+      {' '}<a href="/guias/gasolina-95-o-98/">gasolina 95 o 98</a> y en <a href="/guias/diesel-o-diesel-premium/">diésel o diésel premium</a>.
+    </p>
+
+    <h2>GLP, gas natural y AdBlue, a contracorriente</h2>
+    <p>
+      El autogás (GLP) es el único carburante de automoción que no ha seguido la bajada. Ha estado casi plano, aunque con un ligero
+      repunte: tras unos días en 1,119 €/l, subió a 1,154 €/l el 4 de noviembre y desde el día 11 se mantiene en torno a 1,169 €/l,
+      4,1 céntimos más que al principio. Sigue siendo con diferencia el más barato por litro, pero su ventaja frente a la gasolina 95
+      se ha reducido de 63,6 a 40,6 céntimos, y frente al diésel, de 79,1 a 63,6. Hay que recordar que un coche de GLP consume más
+      litros que uno de gasolina, así que ese margen se nota en el bolsillo (más detalles en la <a href="/guias/glp-autogas/">guía del
+      autogás</a>).
+    </p>
+    <p>
+      El gas natural comprimido (GNC) también ha subido, de 1,958 a 2,099 €/kg (+7,2 %), con buena parte del salto concentrado el
+      4 de noviembre. Y el AdBlue, que no es un carburante pero lo necesitan casi todos los diésel modernos, ha pasado de 0,900 a
+      0,949 €/l.
+    </p>
+
+    <h2>Canarias, Ceuta y Melilla, aparte</h2>
+    <p>
+      Estos cuatro territorios tienen impuestos propios sobre los carburantes, más bajos que los de la península, así que no tiene
+      sentido mezclarlos en el ranking. Pero su evolución también es interesante, porque han bajado mucho menos. En gasolina 95,
+      Las Palmas ha pasado de 1,549 a 1,479 €/l (−7,0 céntimos), Santa Cruz de Tenerife de 1,579 a 1,525 (−5,4), Ceuta de 1,613 a
+      1,548 (−6,5) y Melilla apenas se ha movido, de 1,604 a 1,594 (−1,0). En diésel las bajadas van de 1 a 4 céntimos, y en
+      Melilla el gasóleo A incluso ha subido 5 céntimos, hasta 1,687 €/l.
+    </p>
+    <p>
+      Resultado: la ventaja de estos territorios se ha encogido. A finales de octubre la gasolina 95 de Las Palmas estaba 21,5
+      céntimos por debajo de la mediana de España; hoy, 9,6. Y en Melilla la 95 ya está por encima de la mediana nacional.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Provincia</th><th class="n">Gasolina 95</th><th class="n">Variación</th><th class="n">Gasóleo A</th><th class="n">Variación</th></tr>
+        </thead>
+        <tbody>
+          {c95.own.map((x) => {
+            const d = cDiesel.own.find((y) => y.id === x.id);
+            return (
+              <tr>
+                <td><a href={x.path}>{x.name}</a></td>
+                <td class="n">{price(x.to)}</td><td class="n">{ct(x.diff)} cts</td>
+                <td class="n">{d ? price(d.to) : '—'}</td><td class="n">{d ? `${ct(d.diff)} cts` : '—'}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+
+    <h2>¿Qué puede explicar estos movimientos?</h2>
+    <p>
+      Este informe describe lo que dicen los precios de las gasolineras; no tenemos datos propios de los mercados internacionales,
+      así que no vamos a atribuir la bajada a una causa concreta. Sí podemos recordar los factores que, en general, mueven el precio
+      en el surtidor: la cotización internacional de la gasolina y el gasóleo ya refinados (que no siempre van a la par entre sí ni
+      con el crudo), el tipo de cambio entre el euro y el dólar, los costes de logística y los márgenes de cada operador. Estos
+      cambios llegan al surtidor con cierto retraso y de forma escalonada, lo que encaja con los saltos que se ven en los gráficos.
+    </p>
+    <p>
+      También ayuda a entender por qué los porcentajes parecen pequeños: el impuesto especial es una cantidad fija por litro, de modo
+      que una bajada del producto se traduce en una bajada proporcionalmente menor del precio final. Y que la gasolina y el diésel
+      hayan ido a ritmos distintos indica que sus mercados no se han comportado igual, algo que ocurre con frecuencia. Lo contamos
+      con más calma en <a href="/guias/por-que-sube-y-baja-la-gasolina/">por qué sube y baja la gasolina</a>.
+    </p>
+    <p>
+      Con un solo mes de histórico no se puede hablar todavía de una tendencia de fondo. Volveremos sobre estos datos en el informe
+      de diciembre; mientras tanto, la evolución día a día está en <a href="/informes/evolucion-precio-gasolina/">evolución del precio
+      de la gasolina</a>, que se actualiza sola.
+    </p>
+
+    <h2>Cómo hemos hecho este informe</h2>
+    <p>
+      Cada día guardamos la mediana del precio de cada carburante en el conjunto de España y en cada provincia, calculada sobre todas
+      las gasolineras de venta al público (excluimos las de venta restringida, como las cooperativas solo para socios). Los datos
+      originales son los que publica el {SITE.dataSource.name}. Usamos la mediana y no la media porque una sola gasolinera con un
+      precio raro no la desplaza. Este informe usa los datos del 26 de octubre al 23 de noviembre de 2026 y no se modificará. Más
+      detalles en la <a href="/metodologia/">metodología</a>.
+    </p>
+  </article>
+
+  <AdSlot position="bottom" />
+</Base>

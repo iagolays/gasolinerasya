@@ -1,12 +1,26 @@
 ---
-// Índice de informes.
+// Índice de informes, con una entradilla que lleva cifras del día (se recalculan en cada build).
 import Base from '../../layouts/Base.astro';
 import AdSlot from '../../components/ads/AdSlot.astro';
 import { itemListLd } from '../../components/seo/schema';
-import { REPORTS, TOOLS } from '../../lib/reports';
+import { getHistory, getStations } from '../../lib/data';
+import { REPORTS, TOOLS, changeOver, gapSeries, seriesFrom } from '../../lib/reports';
+import { int } from '../../components/util/format';
+import { cents, priceU } from '../../components/util/texts';
 
 const title = 'Informes sobre el precio de la gasolina en España';
-const description = 'Informes con los precios oficiales de hoy: ranking de provincias, low cost frente a grandes marcas, cuánto cuesta llenar el depósito y marcas más baratas.';
+const description = 'Informes con datos propios: evolución diaria del precio, informe mensual, ranking de provincias, low cost frente a grandes marcas, cuánto cuesta llenar el depósito y marcas más baratas.';
+
+const history = getHistory();
+const s95 = seriesFrom(history, 'gasolina95');
+const sD = seriesFrom(history, 'diesel');
+const now95 = s95[s95.length - 1];
+const nowD = sD[sD.length - 1];
+const w95 = changeOver(s95, 7);
+const gap = gapSeries(history, 'diesel', 'gasolina95');
+const gapNow = gap[gap.length - 1];
+const nStations = getStations().length;
+const firstDate = history[0] ? new Date(`${history[0].date}T12:00:00Z`).toLocaleDateString('es-ES', { timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric' }) : '';
 ---
 <Base
   title={title}
@@ -17,12 +31,38 @@ const description = 'Informes con los precios oficiales de hoy: ranking de provi
 >
   <header class="page-head">
     <h1>Informes del precio de la gasolina</h1>
-    <p class="lead">Análisis hechos con los precios oficiales de todas las gasolineras de España. Se recalculan cada hora.</p>
+    <p class="lead">Análisis propios hechos con los precios oficiales de las {int(nStations)} gasolineras de España que publican sus precios.</p>
   </header>
+
+  <section class="section prose">
+    <p>
+      {now95 && nowD && (
+        <>Hoy el precio mediano de la gasolina 95 en España es de {priceU(now95.value, 'gasolina95')} y el del diésel, de {priceU(nowD.value, 'diesel')}. </>
+      )}
+      {w95 && (Math.abs(w95.diff) < 0.002
+        ? <>En la última semana la gasolina 95 apenas se ha movido. </>
+        : <>En la última semana la gasolina 95 ha {w95.diff < 0 ? 'bajado' : 'subido'} {cents(w95.diff, 0)} por litro. </>)}
+      {gapNow && Math.abs(gapNow.value) >= 0.005 && (
+        <>El diésel cuesta {cents(gapNow.value, 0)} {gapNow.value > 0 ? 'más' : 'menos'} que la gasolina, {gapNow.value > 0 ? 'al revés de lo que fue habitual en España durante años' : 'como ha sido lo habitual en España'}. </>
+      )}
+      Detrás de estas cifras hay un histórico diario propio, que guardamos
+      {firstDate && <> desde el {firstDate}</>}, con la mediana de cada carburante en España y en cada provincia.
+    </p>
+    <p>
+      Con ese histórico publicamos dos tipos de informes. La <a href="/informes/evolucion-precio-gasolina/">evolución del precio</a>
+      {' '}se actualiza sola cada día: variación a 7 y 30 días y provincias que más suben y bajan. Los informes mensuales, como el de
+      {' '}<a href="/informes/noviembre-2026/">noviembre de 2026</a>, son un análisis cerrado de un periodo concreto, con gráficos y
+      explicación de lo que ha pasado. El resto de informes son una foto de hoy y se recalculan cada hora: el ranking de provincias,
+      la comparación entre gasolineras low cost y grandes marcas, lo que cuesta llenar el depósito y las marcas más baratas. Todos
+      usan medianas o medias de miles de gasolineras y explican cómo se han calculado; si quieres el detalle, lo tienes en la
+      {' '}<a href="/metodologia/">metodología</a>.
+    </p>
+  </section>
 
   <AdSlot position="top" />
 
-  <section class="section">
+  <section class="section" aria-labelledby="lista-informes">
+    <h2 id="lista-informes">Todos los informes</h2>
     <ul class="card-list">
       {REPORTS.map((r) => <li><a href={r.path}><strong>{r.title}</strong><span>{r.summary}</span></a></li>)}
     </ul>
