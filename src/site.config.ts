@@ -11,6 +11,12 @@ export const SITE = {
   // Pintar los huecos de anuncio (<AdSlot>). Apagado hasta que AdSense apruebe el sitio,
   // para que durante la revisión no haya cajas vacías con la etiqueta «Publicidad».
   adSlots: false,
+  // Persona que hace la web (titular en /aviso-legal/). Se usa en la firma de las guías y en el JSON-LD.
+  author: {
+    name: 'Iago Leis Fernández',
+    path: '/acerca/#autor',
+  },
+  email: 'contacto@gasolinerasya.es',
   dataSource: {
     name: 'Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos)',
     url: 'https://geoportalgasolineras.es/',
