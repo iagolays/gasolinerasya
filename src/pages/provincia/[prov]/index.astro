@@ -9,6 +9,7 @@ import StatsGrid from '../../../components/StatsGrid.astro';
 import Ranking from '../../../components/Ranking.astro';
 import HistoryChart from '../../../components/HistoryChart.astro';
 import AreaInsights from '../../../components/AreaInsights.astro';
+import RelatedGuides from '../../../components/RelatedGuides.astro';
 import { itemListLd } from '../../../components/seo/schema';
 import {
   cheapest,
@@ -16,6 +17,7 @@ import {
   getProvinces,
   getStationsOfProvince,
   hasOwnFuelTaxes,
+  isIndexableMunicipality,
   municipalityPath,
   municipalityStats,
   nationalHistory,
@@ -84,6 +86,8 @@ const tp = titlePrices({ gasolina95: stats.gasolina95?.min, diesel: stats.diesel
 const title = tp ? `Gasolina en ${name} hoy: ${tp}` : `Precio de la gasolina en ${name} hoy: gasolineras más baratas`;
 const description = `Gasolineras más baratas de ${name}: ${avgList(stats)} de media. Compara ${int(stations.length)} gasolineras en ${munis.length} municipios con datos oficiales actualizados cada hora.`;
 const path = provincePath(province);
+// ItemList solo con municipios indexables (las fichas de gasolinera llevan noindex).
+const indexableMunis = munis.filter(({ m }) => isIndexableMunicipality(m)).sort((a, b) => b.n - a.n).slice(0, 20);
 ---
 <Base
   title={title}
@@ -91,10 +95,12 @@ const path = provincePath(province);
   path={path}
   fuels={fuels}
   breadcrumbs={[{ name, path }]}
-  jsonLd={itemListLd(
-    `Gasolineras más baratas de ${name}`,
-    (rankings[fuels[0]!] ?? []).map((s) => ({ name: `${s.brand} (${placeOf(s).municipality})`, path: stationPath(s) })),
-  )}
+  jsonLd={indexableMunis.length > 0
+    ? itemListLd(
+        `Municipios de ${name} con más gasolineras`,
+        indexableMunis.map(({ m }) => ({ name: `Gasolineras en ${m.name}`, path: municipalityPath(m) })),
+      )
+    : undefined}
 >
   <header class="page-head">
     <h1>Precio de la gasolina en {name} hoy</h1>
@@ -191,6 +197,8 @@ const path = provincePath(province);
     <h2 id="historico">Evolución del precio en {name}</h2>
     <HistoryChart series={series} scope={`en ${name}`} />
   </section>
+
+  <RelatedGuides stations={stations} seed={path} />
 
   <ToolsStrip />
 

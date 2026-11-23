@@ -6,6 +6,7 @@ import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
 import AdSlot from '../../components/ads/AdSlot.astro';
 import ToolsStrip from '../../components/ToolsStrip.astro';
+import RelatedGuides from '../../components/RelatedGuides.astro';
 import FuelTabs from '../../components/FuelTabs.astro';
 import Ranking from '../../components/Ranking.astro';
 import MapView from '../../components/MapView.astro';
@@ -154,11 +155,11 @@ const osmUrl = `https://www.openstreetmap.org/?mlat=${station.lat}&mlon=${statio
         return (
           <p>
             {cap(theFuel(f))} cuesta hoy {priceU(v, f)}{r.of > 1 && mStats[f] && <>, {vsAvg(v, mStats[f]!.avg, mName)}</>}{pStats[f] && <>{r.of > 1 ? ' y' : ','} {vsAvg(v, pStats[f]!.avg, pScope)}</>}; llenar un depósito de 50 litros cuesta unos {tank(v)}.
-            {r.of > 1 && (r.pos === 1 ? <> Es la más barata de las {int(r.of)} gasolineras de {mName} que lo venden.</> : <> Ocupa el puesto {r.pos} de {int(r.of)} en {mName}.</>)}
+            {r.of > 1 && (r.pos === 1 ? <> Es la más barata de las {int(r.of)} gasolineras de {mName} que {f.startsWith('gasolina') ? 'la' : 'lo'} venden.</> : <> Ocupa el puesto {r.pos} de {int(r.of)} en {mName}.</>)}
             {bestNear ? (
               <>
-                {' '}A menos de {RADIUS} km hay {c.length === 5 ? 'al menos 5 gasolineras' : c.length === 1 ? 'una gasolinera' : `${c.length} gasolineras`} más baratas;
-                la mejor es <a href={stationPath(bestNear)}>{bestNear.brand}</a> en{' '}
+                {' '}A menos de {RADIUS} km hay {c.length === 5 ? 'al menos 5 gasolineras más baratas; la mejor es' : c.length === 1 ? 'una gasolinera más barata:' : `${c.length} gasolineras más baratas; la mejor es`}{' '}
+                <a href={stationPath(bestNear)}>{bestNear.brand}</a> en{' '}
                 {getMunicipalityById(bestNear.municipalityId)?.name}, a {km(bestNear.distanceKm)} y {priceU(bestNear.prices[f]!, f)} ({cents(v, bestNear.prices[f]!)} menos por litro).
               </>
             ) : (
@@ -207,6 +208,8 @@ const osmUrl = `https://www.openstreetmap.org/?mlat=${station.lat}&mlon=${statio
       </p>
     </section>
   )}
+
+  <RelatedGuides stations={[station]} seed={station.slug} />
 
   <ToolsStrip />
 

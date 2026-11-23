@@ -6,14 +6,14 @@ import AdSlot from '../../components/ads/AdSlot.astro';
 import FuelTabs from '../../components/FuelTabs.astro';
 import StatsGrid from '../../components/StatsGrid.astro';
 import Ranking from '../../components/Ranking.astro';
+import RelatedGuides from '../../components/RelatedGuides.astro';
 import { itemListLd } from '../../components/seo/schema';
-import { brandPath, getBrands, type Brand } from '../../lib/brands';
-import { cheapest, getProvinceById, getStations, isPeninsular, nationalStats, provincePath, stationPath, statsFor } from '../../lib/data';
+import { brandPath, getBrands, isIndexableBrand, type Brand } from '../../lib/brands';
+import { cheapest, getProvinceById, getStations, isPeninsular, nationalStats, provincePath, statsFor } from '../../lib/data';
 import { FUEL_ORDER } from '../../lib/fuels';
 import type { FuelKey } from '../../lib/types';
 import { int, joinList, plural, price } from '../../components/util/format';
 import { avgList, theFuel, vsAvg } from '../../components/util/texts';
-import { placeOf } from '../../components/util/places';
 
 export const getStaticPaths = (() => getBrands().map((brand) => ({ params: { slug: brand.slug }, props: { brand } }))) satisfies GetStaticPaths;
 
@@ -63,11 +63,12 @@ const path = brandPath(brand);
   title={title}
   description={description}
   path={path}
+  noindex={!isIndexableBrand(brand)}
   fuels={fuels}
   breadcrumbs={[{ name: 'Marcas', path: '/marcas/' }, { name, path }]}
   jsonLd={itemListLd(
-    `Gasolineras ${name} más baratas`,
-    (rankings[fuels[0]!] ?? []).map((s) => ({ name: `${s.brand} (${placeOf(s).municipality})`, path: stationPath(s) })),
+    `Gasolineras ${name} por provincia`,
+    provinces.map(({ p }) => ({ name: `Gasolina en ${p.name}`, path: provincePath(p) })),
   )}
 >
   <header class="page-head">
@@ -123,6 +124,8 @@ const path = brandPath(brand);
     </ul>
     <p class="small muted">Compara con el resto de marcas en el <a href="/marcas/">ranking de marcas</a>.</p>
   </section>
+
+  <RelatedGuides stations={brand.stations} seed={brand.slug} brandName={name} />
 
   <AdSlot position="bottom" />
 </Base>
