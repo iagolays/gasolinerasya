@@ -1,0 +1,245 @@
+---
+// Informe dinámico: evolución del precio de los carburantes con el histórico diario propio
+// (data/history/history.json). Se regenera con cada build. Aguanta históricos cortos.
+import Base from '../../layouts/Base.astro';
+import AdSlot from '../../components/ads/AdSlot.astro';
+import FuelTabs from '../../components/FuelTabs.astro';
+import HistoryChart from '../../components/HistoryChart.astro';
+import { getHistory, getProvinceById, OWN_TAX_PROVINCE_IDS, provincePath } from '../../lib/data';
+import { FUELS, FUEL_ORDER } from '../../lib/fuels';
+import { changeOver, changeSinceStart, gapSeries, historySpanDays, provinceChanges, seriesFrom, splitOwnTaxes, type Change } from '../../lib/reports';
+import type { FuelKey } from '../../lib/types';
+import { pct, pctDiff, price, shortDay } from '../../components/util/format';
+import { cap, cents, fuelName, priceU, theFuel } from '../../components/util/texts';
+
+const path = '/informes/evolucion-precio-gasolina/';
+const history = getHistory();
+const fuels = FUEL_ORDER.filter((f) => seriesFrom(history, f).length > 0);
+const series = Object.fromEntries(fuels.map((f) => [f, seriesFrom(history, f)])) as Partial<Record<FuelKey, Array<{ date: string; value: number }>>>;
+const span = historySpanDays(history);
+const first = history[0];
+const last = history[history.length - 1];
+const isoDate = (iso: string) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('es-ES', { timeZone: 'UTC', day: 'numeric', month: 'long', year: 'numeric' });
+
+const rows = fuels.map((f) => {
+  const s = series[f]!;
+  return { f, now: s[s.length - 1]!, d7: changeOver(s, 7), d30: changeOver(s, 30), start: changeSinceStart(s) };
+});
+const row95 = rows.find((r) => r.f === 'gasolina95');
+const rowD = rows.find((r) => r.f === 'diesel');
+
+// Ranking de provincias: 30 días si hay datos; con al menos dos semanas, desde el primer día;
+// con al menos una, 7 días; con menos, no hay ranking.
+const s95 = series.gasolina95 ?? [];
+const startSpan = changeSinceStart(s95)?.days ?? 0;
+const rankWindow: number | 'start' | 0 = changeOver(s95, 30) ? 30 : startSpan >= 14 ? 'start' : changeOver(s95, 7) ? 7 : 0;
+const rankLabel = rankWindow === 'start' ? `${startSpan} días (desde el ${first ? shortDay(first.date) : ''})` : `${rankWindow} días`;
+const RANK_FUELS: FuelKey[] = (['gasolina95', 'diesel'] as FuelKey[]).filter((f) => series[f]);
+const named = (list: Array<Change & { id: string }>) =>
+  list.map((c) => ({ ...c, province: getProvinceById(c.id) })).filter((c) => c.province);
+const ranking = rankWindow
+  ? RANK_FUELS.map((f) => {
+      const { main, own } = splitOwnTaxes(provinceChanges(history, f, rankWindow), OWN_TAX_PROVINCE_IDS);
+      return { f, main: named(main), own: named(own) };
+    })
+  : [];
+
+const gap = gapSeries(history, 'diesel', 'gasolina95');
+const gapNow = gap[gap.length - 1];
+const gap30 = changeOver(gap, 30) ?? changeSinceStart(gap);
+
+const fmtC = new Intl.NumberFormat('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const ct = (c?: Change) => (c ? `${c.diff > 0 ? '+' : c.diff < 0 ? '−' : ''}${fmtC.format(Math.abs(c.diff) * 100)} cts` : '—');
+const cls = (c?: Change) => (!c ? '' : c.diff <= -0.002 ? 'good' : c.diff >= 0.002 ? 'bad' : '');
+function move(c: Change): string {
+  if (Math.abs(c.diff) < 0.002) return 'se mantiene prácticamente igual';
+  return `${c.diff > 0 ? 'sube' : 'baja'} ${cents(c.diff, 0)} (${pct(pctDiff(c.to.value, c.from.value))})`;
+}
+
+const title = 'Evolución del precio de la gasolina y el diésel en España';
+const description = row95
+  ? `Histórico diario del precio de la gasolina y el diésel en España. Hoy la gasolina 95 está a ${priceU(row95.now.value, 'gasolina95')}${row95.d30 ? ` y en 30 días ${move(row95.d30)}` : ''}. Variación a 7 y 30 días y provincias que más suben y bajan.`
+  : 'Histórico diario del precio de la gasolina y el diésel en España, con la variación a 7 y 30 días y las provincias que más suben y bajan.';
+---
+<Base
+  title={title}
+  description={description}
+  path={path}
+  fuels={fuels}
+  ogType="article"
+  breadcrumbs={[{ name: 'Informes', path: '/informes/' }, { name: 'Evolución del precio', path }]}
+>
+  <article class="article">
+    <h1>Evolución del precio de la gasolina</h1>
+    {first && last && (
+      <p class="article-meta">
+        Histórico propio del {isoDate(first.date)} al {isoDate(last.date)} ({span} días). Se actualiza cada día.
+      </p>
+    )}
+    <p class="lead">
+      Cómo ha cambiado el precio de cada carburante en España día a día, cuánto ha subido o bajado en la última semana y en el
+      último mes, y en qué provincias se ha movido más.
+    </p>
+
+    <AdSlot position="top" />
+
+    {history.length < 2 ? (
+      <p class="notice">Todavía no hay suficientes días en el histórico para calcular la evolución. Vuelve en unos días.</p>
+    ) : (
+      <>
+        <h2>Resumen</h2>
+        <div class="prose">
+          {row95 && (
+            <p>
+              Hoy, {isoDate(row95.now.date)}, el precio mediano de la gasolina 95 en España es de {priceU(row95.now.value, 'gasolina95')}
+              {rowD && <> y el del diésel, de {priceU(rowD.now.value, 'diesel')}</>}.
+              {row95.d7 && <> En los últimos 7 días la gasolina 95 {move(row95.d7)}</>}
+              {row95.d7 && rowD?.d7 && <> y el diésel {move(rowD.d7)}</>}
+              {row95.d7 && '.'}
+              {row95.d30 && <> En 30 días, la gasolina 95 {move(row95.d30)}{rowD?.d30 && <> y el diésel {move(rowD.d30)}</>}.</>}
+              {!row95.d30 && row95.start && <> Desde el primer día del histórico ({shortDay(row95.start.from.date)}), la gasolina 95 {move(row95.start)}{rowD?.start && <> y el diésel {move(rowD.start)}</>}.</>}
+            </p>
+          )}
+          {gapNow && gap30 && (
+            <p>
+              {gapNow.value > 0
+                ? <>El litro de diésel cuesta ahora {cents(gapNow.value, 0)} más que el de gasolina 95</>
+                : <>El litro de diésel cuesta ahora {cents(gapNow.value, 0)} menos que el de gasolina 95</>}
+              {' '}(el {shortDay(gap30.from.date)}, la diferencia era de {cents(gap30.from.value, 0)}{gap30.from.value < 0 ? ' a favor del diésel' : ''}).
+              {' '}Durante años lo habitual en España fue que el diésel fuera el más barato; cuando no es así, conviene repasar
+              {' '}<a href="/guias/gasolina-o-diesel/">qué motor compensa</a>.
+            </p>
+          )}
+        </div>
+
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr><th>Carburante</th><th class="n">Hoy</th><th class="n">7 días</th><th class="n">30 días</th><th class="n">Desde el inicio</th></tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr>
+                  <td>{FUELS[r.f].label}</td>
+                  <td class="n">{price(r.now.value)}</td>
+                  <td class:list={['n', cls(r.d7)]}>{ct(r.d7)}</td>
+                  <td class:list={['n', cls(r.d30)]}>{ct(r.d30)}</td>
+                  <td class:list={['n', cls(r.start)]}>{ct(r.start)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="small muted">
+          Mediana nacional en {FUELS.gasolina95.unit} (GNC en {FUELS.gnc.unit}); variación en céntimos.
+          {first && <> «Desde el inicio» compara con el {isoDate(first.date)}.</>}
+          {' '}«—» = aún no hay datos de hace tantos días.
+        </p>
+
+        <h2>Precio día a día</h2>
+        <p class="section-sub">Mediana diaria en toda España. Elige carburante.</p>
+        <FuelTabs fuels={fuels} sticky />
+        <HistoryChart series={series} scope="en España" />
+      </>
+    )}
+  </article>
+
+  <AdSlot position="inline" />
+
+  {ranking.length > 0 && (
+    <section class="section" aria-labelledby="provincias">
+      <h2 id="provincias">Provincias que más suben y bajan en {rankLabel}</h2>
+      <p class="section-sub">
+        Variación del precio mediano de cada provincia en los últimos {rankLabel}. Península e Illes Balears; Canarias, Ceuta y
+        Melilla van aparte porque tienen otros impuestos.
+      </p>
+      <div class="rank-grid">
+        {ranking.map((r) => (
+          <div>
+            <h3>{cap(fuelName(r.f))}</h3>
+            <div class="table-scroll">
+              <table class="data-table">
+                <thead><tr><th>Provincia</th><th class="n">Antes</th><th class="n">Hoy</th><th class="n">Variación</th></tr></thead>
+                <tbody>
+                  <tr><th colspan="4" class="sub">Las que más bajan</th></tr>
+                  {r.main.slice(0, 5).map((c) => (
+                    <tr><td><a href={provincePath(c.province!)}>{c.province!.name}</a></td><td class="n">{price(c.from.value)}</td><td class="n">{price(c.to.value)}</td><td class:list={['n', cls(c)]}>{ct(c)}</td></tr>
+                  ))}
+                  <tr><th colspan="4" class="sub">Las que menos bajan o más suben</th></tr>
+                  {r.main.slice(-5).reverse().map((c) => (
+                    <tr><td><a href={provincePath(c.province!)}>{c.province!.name}</a></td><td class="n">{price(c.from.value)}</td><td class="n">{price(c.to.value)}</td><td class:list={['n', cls(c)]}>{ct(c)}</td></tr>
+                  ))}
+                  {r.own.length > 0 && <tr><th colspan="4" class="sub">Canarias, Ceuta y Melilla</th></tr>}
+                  {r.own.map((c) => (
+                    <tr><td><a href={provincePath(c.province!)}>{c.province!.name}</a></td><td class="n">{price(c.from.value)}</td><td class="n">{price(c.to.value)}</td><td class:list={['n', cls(c)]}>{ct(c)}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {r.main.length > 1 && (
+              <p class="small muted">
+                En {theFuel(r.f)}, la que más ha bajado es {r.main[0]!.province!.name} ({ct(r.main[0])}) y la que menos,{' '}
+                {r.main[r.main.length - 1]!.province!.name} ({ct(r.main[r.main.length - 1])}).
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+      <p class="small muted">El precio actual de cada provincia, con su ranking completo, está en <a href="/informes/precio-por-provincia/">precio de la gasolina por provincias</a>.</p>
+    </section>
+  )}
+
+  <section class="section" aria-labelledby="como-leer">
+    <h2 id="como-leer">Cómo leer estos datos</h2>
+    <div class="prose">
+      <h3>Qué es la mediana</h3>
+      <p>
+        Todas las cifras de esta página son medianas: si ordenamos de más barata a más cara todas las gasolineras que venden un
+        carburante, la mediana es el precio de la que queda justo en medio. La mitad cobra menos y la otra mitad, más. La usamos en
+        vez de la media porque no se deja arrastrar por unas pocas estaciones con precios muy altos o muy bajos, así que refleja mejor
+        lo que paga un conductor típico. No es el precio más barato que puedes encontrar: en casi cualquier zona hay gasolineras
+        bastante por debajo.
+      </p>
+      <h3>Desde cuándo hay datos</h3>
+      <p>
+        Guardamos un punto al día desde el 26 de octubre de 2026, cuando empezamos a recoger los precios que las gasolineras comunican
+        al Ministerio. Cada día calculamos la mediana de España y la de cada una de las 52 provincias, y la añadimos al histórico. Por
+        eso las comparaciones a 30 días solo aparecen cuando el histórico llega a ese plazo, y si un día faltara el dato (por un fallo
+        de la fuente) usamos el día anterior más cercano.
+      </p>
+      <h3>Cómo interpretarlos</h3>
+      <p>
+        Una bajada de un céntimo por litro son 50 céntimos en un depósito de 50 litros. Los movimientos de un día suelen ser pequeños y
+        a veces se deshacen al siguiente; la variación a 7 o 30 días dice más sobre la dirección del precio. Las variaciones de una
+        provincia pueden ser más bruscas que las nacionales, sobre todo en las que tienen pocas gasolineras, donde un par de cambios
+        de precio mueven la mediana. Canarias, Ceuta y Melilla tienen impuestos propios y sus precios no son comparables con los de la
+        península. Para saber por qué cambian los precios, lee <a href="/guias/por-que-sube-y-baja-la-gasolina/">por qué sube y baja la
+        gasolina</a>; el análisis del primer mes está en el <a href="/informes/noviembre-2026/">informe de noviembre de 2026</a>, y el
+        detalle técnico, en la <a href="/metodologia/">metodología</a>.
+      </p>
+    </div>
+  </section>
+
+  <AdSlot position="bottom" />
+</Base>
+
+<style>
+  .rank-grid {
+    display: grid;
+    gap: 20px;
+  }
+  @media (min-width: 860px) {
+    .rank-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .rank-grid h3 {
+    margin: 0 0 8px;
+  }
+  .data-table th.sub {
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.85rem;
+    background: transparent;
+  }
+</style>

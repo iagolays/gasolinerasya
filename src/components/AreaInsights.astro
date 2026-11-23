@@ -6,6 +6,7 @@ import type { FuelKey, Station } from '../lib/types';
 import { statsFor } from '../lib/data';
 import { brandKind, brandPathOf } from '../lib/brands';
 import { GENERIC_BRAND } from '../lib/slug';
+import { changeOver } from '../lib/reports';
 import { int, pct, pctDiff, plural, price, tank } from './util/format';
 import { cap, cents, fuelName, priceU, theFuel } from './util/texts';
 
@@ -33,11 +34,13 @@ for (const s of stations) {
   if (list) list.push(s);
   else groups.set(s.brand, [s]);
 }
+// Con menos de 3 gasolineras una media o un porcentaje dicen poco: esas comparaciones no se muestran.
+const MIN_COMPARE = 3;
 const refFuel = main[0];
 const brands = [...groups]
-  .filter(([b, list]) => b !== GENERIC_BRAND && list.length >= 2)
+  .filter(([b, list]) => b !== GENERIC_BRAND && list.length >= MIN_COMPARE)
   .map(([b, list]) => ({ name: b, n: list.length, stats: statsFor(list), path: brandPathOf(b) }))
-  .filter((b) => refFuel && b.stats[refFuel])
+  .filter((b) => refFuel && (b.stats[refFuel]?.count ?? 0) >= MIN_COMPARE)
   .sort((a, b) => a.stats[refFuel!]!.avg - b.stats[refFuel!]!.avg)
   .slice(0, 12);
 
@@ -46,7 +49,17 @@ const major = stations.filter((s) => brandKind(s.brand) === 'major');
 const lowStats = statsFor(low);
 const majorStats = statsFor(major);
 const lowShare = stations.length ? (low.length / stations.length) * 100 : 0;
-const kindFuel = main.find((f) => (lowStats[f]?.count ?? 0) >= 2 && (majorStats[f]?.count ?? 0) >= 2);
+const kindFuel = main.find((f) => (lowStats[f]?.count ?? 0) >= MIN_COMPARE && (majorStats[f]?.count ?? 0) >= MIN_COMPARE);
+
+// ── Tendencia a 30 días (solo si el histórico llega; por fechas, no por posición) ──
+const trend30 = main
+  .map((f) => {
+    const t = trend?.[f];
+    const local = t && changeOver(t.local, 30);
+    if (!local) return null;
+    return { f, local: local.diff, national: changeOver(t.national, 30)?.diff };
+  })
+  .filter((x) => x !== null);
 
 // ── Tendencia ──
 function change(series: Array<{ value: number }>, days: number): number | undefined {
@@ -132,7 +145,14 @@ const show = main.length > 0;
         <p>
           En los últimos {trendRows[0]!.days} días, {trendRows.map((r, i) => (
             <>{i > 0 && ' y '}{theFuel(r.f)} {moveText(r.local)} en {name}{r.national !== undefined && <> (en el conjunto de España, {nationalText(r.national)})</>}</>
-          ))}. Si quieres saber por qué cambian los precios, lo explicamos en <a href="/guias/por-que-sube-y-baja-la-gasolina/">por qué sube y baja la gasolina</a>.
+          ))}.
+          {trend30.length > 0 && (
+            <> En los últimos 30 días, {trend30.map((r, i) => (
+              <>{i > 0 && ' y '}{theFuel(r.f)} {moveText(r.local)}{r.national !== undefined && <> (España, {nationalText(r.national)})</>}</>
+            ))}.</>
+          )}
+          {' '}Si quieres saber por qué cambian los precios, lo explicamos en <a href="/guias/por-que-sube-y-baja-la-gasolina/">por qué sube y baja la gasolina</a>;
+          {' '}la evolución día a día de toda España está en <a href="/informes/evolucion-precio-gasolina/">evolución del precio de la gasolina</a>.
         </p>
       )}
     </div>
@@ -142,7 +162,7 @@ const show = main.length > 0;
 {brands.length >= 2 && refFuel && (
   <section class="section" aria-labelledby="marcas-zona">
     <h2 id="marcas-zona">Marcas en {name}</h2>
-    <p class="section-sub">Marcas con al menos dos gasolineras en {scope}, de más barata a más cara en {fuelName(refFuel)}.</p>
+    <p class="section-sub">Marcas con al menos tres gasolineras en {scope}, de más barata a más cara en {fuelName(refFuel)}.</p>
     <div class="table-scroll">
       <table class="data-table">
         <thead>
