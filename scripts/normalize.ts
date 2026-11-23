@@ -242,40 +242,78 @@ export function isJunkBrand(raw: string): boolean {
   return !/\p{L}/u.test(resto) || resto.length < 2;
 }
 
-/** Rótulo → marca normalizada: "REPSOL " → "Repsol", "BP" → "BP", "12241" o "SIN RÓTULO" → "Gasolinera independiente". */
-export function normalizeBrand(raw: string | undefined): string {
+/** Marca dividida en el nombre que se muestra y la forma jurídica que se le quita (", S.L.", " S.A."…, o ""). */
+interface BrandParts {
+  name: string;
+  legal: string;
+}
+
+/** Rótulo → marca normalizada y forma jurídica aparte. Ver `normalizeBrand` y `brandSlugSource`. */
+function brandParts(raw: string | undefined): BrandParts {
   const limpio = (raw ?? '').replace(/["«»“”]/g, '').replace(/\s+/g, ' ').trim();
-  if (isJunkBrand(limpio)) return GENERIC_BRAND;
+  if (isJunkBrand(limpio)) return { name: GENERIC_BRAND, legal: '' };
   const upper = limpio.toLocaleUpperCase('es');
   const especial = MARCAS[upper];
-  if (especial) return especial;
+  if (especial) return { name: especial, legal: '' };
   // Marca especial seguida de más texto: "E.LECLERC LEON" → "E.Leclerc Leon".
   const [primera, ...resto] = limpio.split(' ');
   const especialInicio = MARCAS[primera!.toLocaleUpperCase('es')];
   if (especialInicio && resto.length) {
-    const sigue = normalizeBrand(resto.join(' '));
-    return `${especialInicio} ${sigue === GENERIC_BRAND ? titleCase(resto.join(' ')) : sigue}`;
+    const sigue = brandParts(resto.join(' '));
+    if (sigue.name === GENERIC_BRAND) return { name: `${especialInicio} ${titleCase(resto.join(' '))}`, legal: '' };
+    return { name: `${especialInicio} ${sigue.name}`, legal: sigue.legal };
   }
   const pref = limpio.match(PREFIJO_ES);
   if (pref && limpio.length > pref[0].length) {
     const resto = limpio.slice(pref[0].length);
     // "E.S. 2001" → genérica; "E.S. EL GORRION" → "E.S. El Gorrion"
-    return isJunkBrand(resto) ? GENERIC_BRAND : `E.S. ${normalizeBrand(resto)}`;
+    if (isJunkBrand(resto)) return { name: GENERIC_BRAND, legal: '' };
+    const r = brandParts(resto);
+    return { name: `E.S. ${r.name}`, legal: r.legal };
   }
-  // Forma jurídica final: se separa y se escribe en su forma canónica ("TARADELL,SL" → "Taradell, S.L.").
+  // Forma jurídica final: se separa y se guarda en su forma canónica ("TARADELL,SL" → "Taradell" + ", S.L.").
+  // Si sin ella el rótulo quedaría vacío de sentido ("12 S.L."), se deja pegada.
   let texto = limpio;
-  let sufijo = '';
+  let legal = '';
+  let pegada = '';
   const soc = texto.match(SOCIEDAD);
   const forma = soc && soc.index! > 0 ? formaJuridica(soc[2]!) : undefined;
   if (soc && forma) {
     texto = texto.slice(0, soc.index).trim();
-    sufijo = (soc[1]!.includes(',') ? ', ' : ' ') + forma;
+    const sufijo = (soc[1]!.includes(',') ? ', ' : ' ') + forma;
+    if (isJunkBrand(texto)) pegada = sufijo;
+    else legal = sufijo;
   }
   texto = texto
     .replace(/,(?=\p{L})/gu, ', ') // "ALSE,SL" → "ALSE, SL"
     .replace(/(?<![\p{L}.])E\.S(?![.\p{L}])/gu, 'E.S.') // "E.S LA POCILLA" → "E.S. LA POCILLA"
     .replace(/(?<=(?<!\p{L})\p{L}{1,4})\.(?=\p{L}{3,})/gu, '. '); // "E.S.BAELO" → "E.S. BAELO", "NTRA.SRA." → "NTRA. SRA."
-  return titleCase(texto, { keepUpper: mayusculaEnMarca, reinicio: reinicioEnMarca }) + sufijo;
+  const name = titleCase(texto, { keepUpper: mayusculaEnMarca, reinicio: reinicioEnMarca }) + pegada;
+  if (legal && CONSERVAN_FORMA.has(name)) return { name: name + legal, legal: '' };
+  return { name, legal };
+}
+
+/**
+ * Marcas que ya tienen página propia (/marca/<slug>/) con la forma jurídica en el slug: se les deja para que esa
+ * URL no cambie (brands.ts saca el slug del nombre que se muestra). "FARRUCO S.A." → /marca/farruco-s-a/.
+ */
+const CONSERVAN_FORMA = new Set(['Farruco']);
+
+/**
+ * Rótulo → marca que se muestra: "REPSOL " → "Repsol", "BP" → "BP", "12241" o "SIN RÓTULO" → "Gasolinera independiente".
+ * La forma jurídica final se quita ("BALTRAN S.A" → "Baltran"): es la razón social, no el nombre de la gasolinera.
+ */
+export function normalizeBrand(raw: string | undefined): string {
+  return brandParts(raw).name;
+}
+
+/**
+ * Texto del que sale el slug de marca de la ficha: la marca con su forma jurídica ("Baltran S.A.").
+ * Las URL se crearon cuando el rótulo se mostraba con la forma jurídica; así no cambia ningún slug.
+ */
+export function brandSlugSource(raw: string | undefined): string {
+  const { name, legal } = brandParts(raw);
+  return name + legal;
 }
 
 /** Abreviaturas de tipo de vía al principio de la dirección. */
@@ -315,7 +353,40 @@ export function normalizeAddress(raw: string | undefined): string {
   // "CR CTRA. LC-444" o "CARRETERA CTRA. LC-444" → "Carretera LC-444" (tipo de vía repetido)
   if (via && resto.length > 1 && VIAS[resto[0]!.toLocaleUpperCase('es')] === via) resto.shift();
   const texto = via && resto.length ? `${via} ${resto.join(' ')}` : limpio;
-  return titleCase(texto, { keepUpper: (w) => w.length >= 2 && !/[AEIOUÁÉÍÓÚÜY]/.test(w.replace(/[./]/g, '')) && !/^(DE|DEL)$/.test(w) });
+  const titulo = titleCase(texto, { keepUpper: (w) => w.length >= 2 && !/[AEIOUÁÉÍÓÚÜY]/.test(w.replace(/[./]/g, '')) && !/^(DE|DEL)$/.test(w) });
+  return moveArticle(titulo);
+}
+
+/** Tipos de vía (ya en formato título) tras los que va el artículo que la API pone entre paréntesis. */
+const TIPOS_VIA = new Set([
+  ...Object.values(VIAS),
+  'Autopista', 'Avinguda', 'Barrio', 'Bulevar', 'Calleja', 'Callejón', 'Cami', 'Camí', 'Camino', 'Carrer', 'Carrera',
+  'Costanilla', 'Cuesta', 'Glorieta', 'Lugar', 'Paraje', 'Partida', 'Pasaje', 'Passeig', 'Plaça', 'Poligono', 'Rambla',
+  'Rúa', 'Rua', 'Travesía', 'Travesia', 'Urbanizacion', 'Vía', 'Via',
+]);
+
+/** Artículo suelto entre paréntesis detrás del nombre: "Teixidora (de la)", "Pozo (El)". */
+const ARTICULO_DIRECCION = /\s*\((de la|de las|de los|del|de|la|el|los|las)\)/i;
+
+/**
+ * Recoloca el artículo que la API pone entre paréntesis detrás del nombre de la vía:
+ * "Calle Constitucion (de la), 100" → "Calle de la Constitucion, 100"; "Calle Pozo (El), 106" → "Calle El Pozo, 106".
+ * Va detrás del tipo de vía si lo hay y, si no, al principio.
+ */
+export function moveArticle(address: string): string {
+  const m = address.match(ARTICULO_DIRECCION);
+  if (!m) return address;
+  const antes = address.slice(0, m.index).trim();
+  const despues = address.slice(m.index! + m[0].length);
+  const lower = m[1]!.toLocaleLowerCase('es');
+  // "de", "del", "de la"… van en minúscula; el artículo solo es parte del nombre: "El Pozo".
+  const articulo = lower.startsWith('de') ? lower : lower.charAt(0).toLocaleUpperCase('es') + lower.slice(1);
+  const [tipo, ...nombre] = antes.split(' ');
+  const res =
+    tipo && TIPOS_VIA.has(tipo) && nombre.length
+      ? `${tipo} ${articulo} ${nombre.join(' ')}${despues}`
+      : `${articulo.charAt(0).toLocaleUpperCase('es')}${articulo.slice(1)} ${antes}${despues}`;
+  return moveArticle(res);
 }
 
 /** ¿Abre 24 horas todos los días? */
@@ -339,6 +410,8 @@ export function buildDataset(raw: RawResponse): BuildResult {
   const provinces = new Map<string, Province>();
   const munis = new Map<string, Municipality>();
   const stations: Station[] = [];
+  /** Texto del slug de marca de cada estación (la marca con la forma jurídica, ver `brandSlugSource`). */
+  const slugSources = new Map<string, string>();
 
   for (const e of raw.ListaEESSPrecio) {
     if ((e['Tipo Venta'] ?? '').trim().toUpperCase() === 'R') {
@@ -381,6 +454,7 @@ export function buildDataset(raw: RawResponse): BuildResult {
       prov.municipalityIds.push(municipalityId);
     }
     const brand = normalizeBrand(e['Rótulo']);
+    slugSources.set(id, brandSlugSource(e['Rótulo']));
     const schedule = (e.Horario ?? '').replace(/\s+/g, ' ').trim();
     stations.push({
       id,
@@ -415,7 +489,7 @@ export function buildDataset(raw: RawResponse): BuildResult {
   const muniOrder = new Map<string, number>();
   for (const p of provList) p.municipalityIds.forEach((id, i) => muniOrder.set(id, i));
   for (const s of stations) {
-    s.slug = `${brandSlug(s.brand)}-${munis.get(s.municipalityId)!.slug}-${slugify(s.id)}`;
+    s.slug = `${brandSlug(slugSources.get(s.id) ?? s.brand)}-${munis.get(s.municipalityId)!.slug}-${slugify(s.id)}`;
   }
   stations.sort(
     (a, b) =>
@@ -441,11 +515,16 @@ export function buildStationsMin(ds: Dataset): StationsMin {
   const brandIndex = new Map<string, number>();
   const b: StationsMin['b'] = [];
   const s: MinStationRow[] = ds.stations.map((st) => {
-    let bi = brandIndex.get(st.brand);
+    // El slug de marca sale del de la estación (`${marca}-${municipio}-${id}`): con la forma jurídica quitada
+    // del nombre, "Baltran" puede llevar el slug "baltran-s-a" o "baltran" según la estación.
+    const tail = `-${ds.municipalities[muniIndex.get(st.municipalityId)!]!.slug}-${slugify(st.id)}`;
+    const bSlug = st.slug.endsWith(tail) ? st.slug.slice(0, -tail.length) : brandSlug(st.brand);
+    const key = `${st.brand}\u0000${bSlug}`;
+    let bi = brandIndex.get(key);
     if (bi === undefined) {
       bi = b.length;
-      brandIndex.set(st.brand, bi);
-      b.push([st.brand, brandSlug(st.brand)]);
+      brandIndex.set(key, bi);
+      b.push([st.brand, bSlug]);
     }
     const prices = FUEL_ORDER.map((f) => (st.prices[f] === undefined ? 0 : Math.round(st.prices[f]! * 1000)));
     // Quitamos los ceros finales: el decodificador trata las columnas que faltan como "no lo vende".

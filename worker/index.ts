@@ -1,5 +1,8 @@
 // Worker de gasolinerasya.es.
-// - fetch: sirve la web estática (dist/) tal cual; toda la lógica de rutas y 404 la hace `assets`.
+// - fetch: sirve la web estática (dist/); la lógica de rutas y 404 la hace `assets`. Solo cambia sus redirecciones
+//   de forma canónica (/guias → /guias/, /index.html → /), que `assets` da como 307 sin opción para cambiarlo,
+//   por 301: son permanentes y así Google no las trata como temporales. Para que el Worker las vea,
+//   `run_worker_first` en wrangler.jsonc (sin él, `assets` responde a esas peticiones sin pasar por aquí).
 // - scheduled: cada hora lanza el workflow "Desplegar" de GitHub (workflow_dispatch). El cron de
 //   GitHub Actions se retrasa horas cuando GitHub va cargado; el Cron Trigger de Cloudflare es puntual.
 //
@@ -33,8 +36,13 @@ async function dispatchDeploy(env: Env): Promise<void> {
 }
 
 export default {
-  fetch(request: Request, env: Env): Promise<Response> {
-    return env.ASSETS.fetch(request);
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const res = await env.ASSETS.fetch(request);
+    // `assets` solo redirige con 307 por html_handling (barra final, index.html, .html): siempre permanente.
+    if ((res.status === 307 || res.status === 308) && res.headers.has('Location')) {
+      return new Response(null, { status: 301, headers: res.headers });
+    }
+    return res;
   },
   async scheduled(_controller: unknown, env: Env): Promise<void> {
     await dispatchDeploy(env);
