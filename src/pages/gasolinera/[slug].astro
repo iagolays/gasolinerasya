@@ -7,6 +7,7 @@ import Base from '../../layouts/Base.astro';
 import AdSlot from '../../components/ads/AdSlot.astro';
 import ToolsStrip from '../../components/ToolsStrip.astro';
 import RelatedGuides from '../../components/RelatedGuides.astro';
+import { displayName } from '../../components/util/places';
 import FuelTabs from '../../components/FuelTabs.astro';
 import Ranking from '../../components/Ranking.astro';
 import MapView from '../../components/MapView.astro';
@@ -42,8 +43,8 @@ interface Props {
 const { station } = Astro.props;
 const muni = getMunicipalityById(station.municipalityId)!;
 const province = getProvinceById(station.provinceId)!;
-const mName = muni.name;
-const pName = province.name;
+const mName = displayName(muni.name);
+const pName = displayName(province.name);
 const pScope = mName === pName ? `la provincia de ${pName}` : pName;
 const mStats = municipalityStats(muni.id);
 const pStats = provinceStats(province.id);

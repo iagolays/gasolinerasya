@@ -10,6 +10,7 @@ import StationTable from '../../../components/StationTable.astro';
 import MapView from '../../../components/MapView.astro';
 import AreaInsights from '../../../components/AreaInsights.astro';
 import RelatedGuides from '../../../components/RelatedGuides.astro';
+import { displayName } from '../../../components/util/places';
 import {
   cheapest,
   getMunicipalities,
@@ -40,8 +41,8 @@ interface Props {
   province: Province;
 }
 const { muni, province } = Astro.props;
-const name = muni.name;
-const pName = province.name;
+const name = displayName(muni.name);
+const pName = displayName(province.name);
 // Si el municipio se llama como la provincia, se aclara en los textos: "la provincia de Madrid".
 const pScope = name === pName ? `la provincia de ${pName}` : pName;
 const stations = getStationsOf(muni.id);
