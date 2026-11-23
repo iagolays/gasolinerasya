@@ -19,16 +19,17 @@ El precio que ves en el surtidor se puede dividir en tres bloques:
 
 ## El impuesto especial sobre hidrocarburos
 
-Lo regula la Ley 38/1992 de Impuestos Especiales. Los tipos generales vigentes desde 2019, cuando se integró en ellos el antiguo tramo autonómico, son:
+Lo regula la Ley 38/1992 de Impuestos Especiales (artículo 50). Cada carburante tiene un tipo general y un tipo especial de 72 € por cada 1.000 litros, que desde 2019 sustituye al antiguo tramo autonómico. Sumados, quedan así:
 
-| Carburante | Impuesto especial |
-|---|---|
-| Gasolina | 473,69 € por cada 1.000 litros (unos **47,4 céntimos por litro**) |
-| Gasóleo de automoción | 379,00 € por cada 1.000 litros (unos **37,9 céntimos por litro**) |
+| Carburante | Tipo general + especial | Por litro |
+|---|---|---|
+| Gasolina sin plomo 95 | 400,69 + 72 = 472,69 € por cada 1.000 litros | unos **47,3 céntimos** |
+| Gasolina sin plomo 98 | 431,92 + 72 = 503,92 € por cada 1.000 litros | unos **50,4 céntimos** |
+| Gasóleo de automoción | 307 + 72 = 379 € por cada 1.000 litros | unos **37,9 céntimos** |
 
 Estos importes se pueden modificar en los Presupuestos o por otras leyes; si quieres la cifra oficial actual, consúltala en la web de la Agencia Tributaria.
 
-La diferencia de casi 10 céntimos a favor del gasóleo es histórica: se hizo para favorecer al transporte profesional. La Unión Europea y la OCDE llevan años recomendando igualarlos, porque el diésel contamina más por litro, y la equiparación se ha debatido en España varias veces.
+La diferencia de más de 9 céntimos a favor del gasóleo es histórica: se hizo para favorecer al transporte profesional. La Unión Europea y la OCDE llevan años recomendando igualarlos, porque el diésel contamina más por litro, y la equiparación se ha debatido en España varias veces.
 
 ## Desglose de un litro real
 
@@ -38,9 +39,9 @@ Con las medianas de precios de la península y Baleares del **23 de noviembre de
 |---|---|---|
 | Precio en el surtidor | 1,569 € | 1,808 € |
 | IVA (21/121 del precio) | 0,272 € | 0,314 € |
-| Impuesto especial | 0,474 € | 0,379 € |
-| **Total impuestos** | **0,746 € (48 %)** | **0,693 € (38 %)** |
-| Producto, logística y márgenes | 0,823 € (52 %) | 1,115 € (62 %) |
+| Impuesto especial | 0,473 € | 0,379 € |
+| **Total impuestos** | **0,745 € (47 %)** | **0,693 € (38 %)** |
+| Producto, logística y márgenes | 0,824 € (53 %) | 1,115 € (62 %) |
 
 Es decir, ese día casi **la mitad de lo que pagabas por un litro de gasolina eran impuestos**. En el gasóleo el porcentaje era menor por dos motivos: paga menos impuesto especial y el producto estaba más caro.
 
@@ -74,3 +75,12 @@ Por eso sus gasolineras salen casi siempre como las más baratas de España: el 
 Los impuestos son iguales en toda la península y Baleares, así que **la diferencia de precio entre dos gasolineras sale entera del producto, los costes y el margen** de cada una. Esa diferencia es grande: el 23 de noviembre de 2026 la mediana de la gasolina 95 iba de 1,539 €/l en Navarra a 1,659 €/l en Baleares, y dentro de un mismo municipio grande la diferencia entre la más barata y la más cara solía superar los 20 céntimos.
 
 Es la parte que sí puedes controlar eligiendo dónde repostas. Compara las de tu zona en [gasolineras cerca de mí](/cerca/) y mira más ideas en [cómo ahorrar gasolina](/guias/como-ahorrar-gasolina/).
+
+## Fuentes
+
+- [Ley 38/1992, de Impuestos Especiales](https://www.boe.es/buscar/act.php?id=BOE-A-1992-28741): impuesto sobre hidrocarburos (artículo 50) y ámbito territorial, que excluye Canarias, Ceuta y Melilla (artículo 3) (BOE).
+- [Impuesto sobre Hidrocarburos: base imponible y tipos de gravamen](https://sede.agenciatributaria.gob.es/Sede/impuestos-especiales-medioambientales/impuestos-especiales-fabricacion/hidrocarburos/base-imponible-tipos-gravamen.html) (Agencia Tributaria).
+- [Ley 37/1992, del Impuesto sobre el Valor Añadido](https://www.boe.es/buscar/act.php?id=BOE-A-1992-28740) (BOE).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

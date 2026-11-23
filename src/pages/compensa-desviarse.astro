@@ -4,31 +4,99 @@ import Base from '../layouts/Base.astro';
 import AdSlot from '../components/ads/AdSlot.astro';
 import { nationalStats } from '../lib/data';
 import { TOOLS } from '../lib/reports';
+import { price } from '../components/util/format';
 
 const national = nationalStats();
 const avg = national.gasolina95?.avg ?? 1.7;
 const near = Math.round((avg + 0.04) * 1000) / 1000;
 const far = Math.round((avg - 0.06) * 1000) / 1000;
 
-const title = '¿Compensa desviarse para repostar más barato? Calculadora';
-const description = 'Calcula si merece la pena hacer kilómetros de más para echar gasolina o diésel en una gasolinera más barata, y hasta cuántos kilómetros compensa.';
+// Cifras de referencia fijas (mediana de península y Baleares del 23-11-2026) para los ejemplos resueltos.
+const REF_DATE = '23-11-2026';
+const REF95 = 1.569;
+const REFD = 1.808;
+const nf2 = new Intl.NumberFormat('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const nf1 = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 });
+const eur = (n: number) => `${nf2.format(n)} €`;
+const cts = (n: number) => `${nf1.format(n * 100)} cént.`;
+
+/** Mismo cálculo que la calculadora (components/scripts/calc.ts). */
+function detour(near: number, far: number, liters: number, km: number, cons: number) {
+  const save = liters * (near - far);
+  const costPerKm = (cons / 100) * far;
+  const cost = km * costPerKm;
+  return { save, costPerKm, cost, net: save - cost, maxKm: save / costPerKm };
+}
+const EJEMPLOS = [
+  { titulo: 'Llenar el depósito con 10 céntimos de diferencia', fuel: 'gasolina 95', near: 1.629, far: 1.529, liters: 40, km: 6, cons: 6.5 },
+  { titulo: 'Echar poco y desviarse mucho', fuel: 'gasolina 95', near: 1.589, far: 1.549, liters: 15, km: 12, cons: 6.5 },
+  { titulo: 'Una furgoneta diésel con depósito grande', fuel: 'diésel', near: 1.858, far: 1.768, liters: 70, km: 10, cons: 8 },
+].map((e) => ({ ...e, r: detour(e.near, e.far, e.liters, e.km, e.cons) }));
+
+// Kilómetros máximos de desvío (ida y vuelta) con 6,5 l/100 km y la gasolina 95 de referencia.
+const LITROS = [20, 40, 60];
+const DIFS = [0.03, 0.05, 0.1];
+const kmMax = (liters: number, dif: number) => (liters * dif) / ((6.5 / 100) * REF95);
+
+// Coste de cada kilómetro de más por tipo de vehículo (consumos reales orientativos).
+const COSTE_KM: Array<{ tipo: string; fuel: 'g' | 'd'; cons: number }> = [
+  { tipo: 'Utilitario de gasolina', fuel: 'g', cons: 6 },
+  { tipo: 'Híbrido no enchufable', fuel: 'g', cons: 4.8 },
+  { tipo: 'Compacto diésel', fuel: 'd', cons: 5.2 },
+  { tipo: 'SUV de gasolina', fuel: 'g', cons: 8 },
+  { tipo: 'Furgoneta diésel', fuel: 'd', cons: 8.5 },
+];
+
+const FAQ: Array<{ q: string; a: string }> = [
+  {
+    q: '¿Qué kilómetros tengo que poner?',
+    a: 'Los kilómetros de más en total, contando la ida y la vuelta, respecto al recorrido que harías de todas formas. Si la gasolinera barata está a 3 km de tu ruta y tienes que volver a ella, son 6 km.',
+  },
+  {
+    q: '¿Qué significa «compensa hasta»?',
+    a: 'Es el desvío máximo, en kilómetros de ida y vuelta, a partir del cual el carburante gastado para llegar se come todo el ahorro. Se calcula dividiendo el ahorro entre lo que cuesta cada kilómetro de más.',
+  },
+  {
+    q: '¿Por qué el coste del desvío usa el precio de la gasolinera barata?',
+    a: 'Porque los litros que gastas en el desvío los repondrás al repostar allí. Usar el precio de la cercana cambia el resultado en céntimos, no en euros.',
+  },
+  {
+    q: '¿Cuenta el tiempo que pierdo?',
+    a: 'No. La calculadora solo compara dinero: carburante ahorrado frente a carburante gastado. Si ganas un euro a cambio de quince minutos, decide tú si te merece la pena. Lo ideal es repostar en una gasolinera barata que te pille de camino.',
+  },
+  {
+    q: '¿Y si la gasolinera barata tiene descuento o yo tengo una tarjeta de puntos?',
+    a: 'Escribe el precio final que pagarías en cada una, ya con el descuento aplicado. Así comparas lo que de verdad sale de tu bolsillo.',
+  },
+];
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+
+const title = 'Calculadora: ¿compensa ir a una gasolinera más barata?';
+const description = 'Calculadora de desvío: pon los dos precios, los litros y los kilómetros de más y te dice si ahorras o pierdes dinero, y hasta cuántos kilómetros compensa ir.';
 ---
 <Base
   title={title}
   description={description}
   path="/compensa-desviarse/"
-  breadcrumbs={[{ name: '¿Compensa desviarse?', path: '/compensa-desviarse/' }]}
-  jsonLd={{
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: 'Calculadora: ¿compensa desviarse para repostar?',
-    applicationCategory: 'UtilitiesApplication',
-    operatingSystem: 'Any',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
-  }}
+  breadcrumbs={[{ name: 'Calculadora de desvío', path: '/compensa-desviarse/' }]}
+  jsonLd={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Calculadora de desvío para repostar',
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Any',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' },
+    },
+    faqLd,
+  ]}
 >
   <header class="page-head">
-    <h1>¿Compensa desviarse para repostar más barato?</h1>
+    <h1>Calculadora: ¿compensa ir a una gasolinera más barata?</h1>
     <p class="lead">Pon los dos precios y los kilómetros de más que tendrías que hacer: te decimos si ganas dinero y hasta dónde merece la pena ir.</p>
   </header>
 
@@ -69,18 +137,113 @@ const description = 'Calcula si merece la pena hacer kilómetros de más para ec
 
   <AdSlot position="inline" />
 
-  <section class="section article" aria-labelledby="como">
-    <h2 id="como">Cómo se calcula</h2>
-    <p><strong>Ahorro</strong> = litros × (precio cercana − precio barata).</p>
-    <p><strong>Coste del desvío</strong> = kilómetros de más × consumo ÷ 100 × precio de la barata.</p>
+  <section class="section article" aria-labelledby="que">
+    <h2 id="que">Qué calcula</h2>
     <p>
-      Compensa si el ahorro es mayor que el coste. Como regla rápida, con un coche que gasta unos 6,5 l/100 km cada kilómetro de más cuesta
-      unos 11 céntimos. Lo explicamos con ejemplos en la guía <a href="/guias/compensa-desviarse-para-repostar/">¿compensa desviarse para repostar?</a>
+      Compara dos cosas: lo que <strong>ahorras</strong> al echar los mismos litros en una gasolinera más barata y lo que te
+      <strong>cuesta llegar</strong> hasta ella en carburante. Te da el veredicto (ganas o pierdes, y cuánto) y el desvío máximo que
+      compensa. Si quieres entender el razonamiento con más calma, lo explicamos paso a paso en la guía
+      <a href="/guias/compensa-desviarse-para-repostar/">¿compensa desviarse para repostar más barato?</a>
     </p>
+
+    <h2 id="como">Las fórmulas</h2>
+    <ul>
+      <li><strong>Ahorro</strong> = litros × (precio de la cercana − precio de la barata).</li>
+      <li><strong>Coste de cada kilómetro de más</strong> = consumo ÷ 100 × precio de la barata.</li>
+      <li><strong>Coste del desvío</strong> = kilómetros de más (ida y vuelta) × coste de cada kilómetro.</li>
+      <li><strong>Resultado</strong> = ahorro − coste del desvío. Compensa si es positivo.</li>
+      <li><strong>Compensa hasta</strong> = ahorro ÷ coste de cada kilómetro de más.</li>
+    </ul>
     <p>
-      Para saber qué gasolineras tienes cerca y a qué precio, usa <a href="/cerca/">gasolineras cerca de mí</a>: ordena por precio y verás
-      la distancia de cada una.
+      Como regla rápida, con un coche que gasta 6,5 l/100 km y la gasolina 95 a la media de hoy ({price(avg)} €/l),
+      cada kilómetro de más cuesta unos {cts((6.5 / 100) * avg)} Si vas a echar 40 litros, cada céntimo de diferencia por litro te
+      «paga» unos {nf1.format(0.4 / ((6.5 / 100) * avg))} km de desvío.
     </p>
+
+    <h2 id="ejemplos">Tres ejemplos resueltos</h2>
+    <p>Con precios realistas alrededor de la mediana del {REF_DATE} (gasolina 95: {price(REF95)} €/l; gasóleo A: {price(REFD)} €/l).</p>
+    {EJEMPLOS.map((e, i) => (
+      <>
+        <h3>{i + 1}. {e.titulo}</h3>
+        <p>
+          Precio cercano {price(e.near)} €/l y barato {price(e.far)} €/l de {e.fuel}; echas {e.liters} litros,
+          el desvío son {e.km} km y el vehículo gasta {nf1.format(e.cons)} l/100 km.
+        </p>
+        <div class="table-scroll">
+          <table>
+            <tbody>
+              <tr><td>Ahorro</td><td>{e.liters} × {nf2.format(e.near - e.far)}</td><td>{eur(e.r.save)}</td></tr>
+              <tr><td>Coste del desvío</td><td>{e.km} × {nf1.format(e.cons)} ÷ 100 × {price(e.far)}</td><td>{eur(e.r.cost)}</td></tr>
+              <tr><th>{e.r.net > 0 ? 'Ganas' : 'Pierdes'}</th><td>{eur(e.r.save)} − {eur(e.r.cost)}</td><th>{eur(Math.abs(e.r.net))}</th></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          {e.r.net > 0
+            ? `Compensa: con esos números el desvío merece la pena hasta unos ${nf1.format(e.r.maxKm)} km de ida y vuelta.`
+            : `No compensa: con tan pocos litros, solo merecería la pena un desvío de menos de ${nf1.format(e.r.maxKm)} km de ida y vuelta.`}
+        </p>
+      </>
+    ))}
+    <p>
+      La lección: el desvío compensa casi siempre cuando vas a llenar mucho y la diferencia es de varios céntimos, y casi nunca cuando
+      vas a echar poco.
+    </p>
+
+    <h2 id="tabla">¿Hasta cuántos kilómetros compensa?</h2>
+    <p>
+      Kilómetros máximos de desvío (ida y vuelta) para un coche que gasta 6,5 l/100 km, con la gasolina 95 a {price(REF95)} €/l
+      ({REF_DATE}). Por debajo de esa distancia, ganas dinero.
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Litros que echas</th>{DIFS.map((d) => <th>{Math.round(d * 100)} cént. más barata</th>)}</tr></thead>
+        <tbody>
+          {LITROS.map((l) => (
+            <tr><td>{l} l</td>{DIFS.map((d) => <td>{nf1.format(kmMax(l, d))} km</td>)}</tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="coste-km">Lo que cuesta cada kilómetro de más según el vehículo</h2>
+    <p>
+      Con consumos reales <strong>orientativos</strong> (varían con el motor, la carga y el tráfico; mejor si usas el tuyo) y los precios de
+      referencia del {REF_DATE}:
+    </p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Vehículo</th><th>Consumo orientativo</th><th>Cada km de más</th><th>Desvío de 10 km</th></tr></thead>
+        <tbody>
+          {COSTE_KM.map((c) => {
+            const perKm = (c.cons / 100) * (c.fuel === 'g' ? REF95 : REFD);
+            return <tr><td>{c.tipo}</td><td>{nf1.format(c.cons)} l/100 km</td><td>{cts(perKm)}</td><td>{eur(perKm * 10)}</td></tr>;
+          })}
+        </tbody>
+      </table>
+    </div>
+    <p>
+      ¿No sabes cuánto gasta tu coche? Mídelo con el método del depósito lleno que explicamos en
+      <a href="/guias/consumo-real-vs-homologado/">consumo real frente a homologado</a>. Para saber qué gasolineras tienes cerca y a qué
+      precio, usa <a href="/cerca/">gasolineras cerca de mí</a>: ordena por precio y verás la distancia de cada una.
+    </p>
+
+    <h2 id="faq">Preguntas frecuentes</h2>
+    {FAQ.map((f) => (
+      <>
+        <h3>{f.q}</h3>
+        <p>{f.a}</p>
+      </>
+    ))}
+
+    <h2 id="guias">Guías relacionadas</h2>
+    <ul>
+      <li><a href="/guias/compensa-desviarse-para-repostar/">¿Compensa desviarse para repostar más barato?</a>: la guía con la explicación y la regla rápida.</li>
+      <li><a href="/guias/gasolineras-low-cost-calidad/">¿Es peor la gasolina de las low cost?</a>: por qué puedes repostar en la barata sin miedo.</li>
+      <li><a href="/guias/descuentos-y-tarjetas-carburante/">Descuentos y tarjetas de carburante</a>: cómo comparar precios con descuento.</li>
+      <li><a href="/guias/mejor-dia-para-repostar/">¿Cuál es el mejor día para echar gasolina?</a></li>
+      <li><a href="/calculadora-gasolina/">Calculadora de gasolina</a>: coste de un viaje, del depósito y del mes.</li>
+    </ul>
   </section>
 
   <section class="section" aria-labelledby="mas">

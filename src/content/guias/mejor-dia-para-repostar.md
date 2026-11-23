@@ -33,7 +33,7 @@ Lo que sí es más habitual es que los precios **suban un poco antes de los puen
 
 ## ¿Mañana o tarde?
 
-Hay gasolineras que cambian el precio varias veces al día y otras que lo cambian una vez a la semana. No hay una regla fija: depende de cada estación y de su competencia. Nuestros datos se actualizan **cada hora** con los precios que las gasolineras comunican al Ministerio, así que puedes comprobar el precio justo antes de salir.
+Hay gasolineras que cambian el precio varias veces al día y otras que lo cambian una vez a la semana. No hay una regla fija: depende de cada estación y de su competencia. Los datos de esta web se actualizan **cada hora** con los precios que las gasolineras comunican al Ministerio, así que puedes comprobar el precio justo antes de salir.
 
 ¿Y lo de repostar temprano porque el combustible está más frío? Es un mito: está en tanques enterrados con temperatura casi constante. Lo explicamos en [mitos al repostar](/guias/mitos-al-repostar/).
 
@@ -59,3 +59,11 @@ Para hacerse una idea:
 6. **Fíjate en la tendencia**: si los precios llevan días bajando, no hace falta llenar hasta arriba; si suben, mejor llenar.
 
 Más consejos en [cómo ahorrar gasolina](/guias/como-ahorrar-gasolina/) y una explicación de los vaivenes del precio en [por qué sube y baja la gasolina](/guias/por-que-sube-y-baja-la-gasolina/).
+
+## Fuentes
+
+- [Weekly Oil Bulletin](https://energy.ec.europa.eu/data-and-analysis/weekly-oil-bulletin_en): boletín petrolero semanal con los precios de los carburantes en la UE (Comisión Europea).
+- [Supervisión de precios de carburantes](https://www.cnmc.es/ambitos-de-actuacion/energia/mercado-petroleo-biocarburantes) (CNMC).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

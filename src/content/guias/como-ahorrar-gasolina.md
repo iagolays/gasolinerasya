@@ -49,3 +49,11 @@ Si haces 15.000 km al año con un consumo de 6,5 l/100 km, gastas unos 975 litro
 Son estimaciones con la gasolina a 1,57 €/l; tus cifras dependerán de tu coche y de tus trayectos. Lo importante es que **los consejos suman**: combinando dónde repostas y cómo conduces, puedes ahorrar varios cientos de euros al año sin cambiar de coche.
 
 Haz tus cuentas con la [calculadora de gasolina](/calculadora-gasolina/), mide tu [consumo real](/guias/consumo-real-vs-homologado/) y comprueba si te [compensa desviarte](/compensa-desviarse/) a una gasolinera más barata. Y antes de hacer caso a cualquier truco que circule por ahí, lee [mitos al repostar](/guias/mitos-al-repostar/).
+
+## Fuentes
+
+- [Manual de conducción eficiente para vehículos turismo](https://www.miteco.gob.es/es/ceneam/programas-de-educacion-ambiental/hogares-verdes/conduccion_eficiente_idae_tcm30-171577.pdf) (IDAE, PDF alojado por el Ministerio para la Transición Ecológica).
+- [Base de datos de consumo y emisiones de turismos](https://coches.idae.es/) (IDAE).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

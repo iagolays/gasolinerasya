@@ -77,3 +77,9 @@ Con tu consumo real puedes:
 - Detectar problemas: si el consumo sube de repente sin cambiar de hábitos, revisa la presión de los neumáticos, el filtro de aire o lleva el coche al taller.
 
 Y si quieres bajarlo, mira [cómo ahorrar gasolina](/guias/como-ahorrar-gasolina/).
+
+## Fuentes
+
+- [Base de datos de consumo y emisiones de turismos](https://coches.idae.es/) (IDAE).
+- [Manual de conducción eficiente para vehículos turismo](https://www.miteco.gob.es/es/ceneam/programas-de-educacion-ambiental/hogares-verdes/conduccion_eficiente_idae_tcm30-171577.pdf) (IDAE, PDF alojado por el Ministerio para la Transición Ecológica).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.

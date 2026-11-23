@@ -60,3 +60,11 @@ Si quieres gastar menos, olvida los trucos de temperatura y horarios y céntrate
 - **Calcula si compensa desviarte** a una gasolinera más barata con la herramienta [¿compensa desviarse?](/compensa-desviarse/).
 
 Más consejos en [cómo ahorrar gasolina: 12 consejos que funcionan](/guias/como-ahorrar-gasolina/).
+
+## Fuentes
+
+- [Real Decreto 61/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-2779), por el que se determinan las especificaciones de gasolinas, gasóleos, fuelóleos y gases licuados del petróleo (BOE, texto consolidado).
+- [Manual de conducción eficiente para vehículos turismo](https://www.miteco.gob.es/es/ceneam/programas-de-educacion-ambiental/hogares-verdes/conduccion_eficiente_idae_tcm30-171577.pdf) (IDAE, PDF alojado por el Ministerio para la Transición Ecológica).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

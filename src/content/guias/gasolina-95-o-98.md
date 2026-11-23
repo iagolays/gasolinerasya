@@ -47,6 +47,8 @@ Con los datos oficiales del **23 de noviembre de 2026**, en las gasolineras de l
 
 En un depósito de 50 litros, unos 7 € más cada vez.
 
+Parte de esa diferencia son impuestos: la gasolina 98 paga un impuesto especial más alto que la 95 (503,92 € frente a 472,69 € por cada 1.000 litros, unos 3 céntimos más por litro), y encima se le aplica el IVA. Lo explicamos en [qué impuestos pagas en cada litro](/guias/impuestos-de-la-gasolina/).
+
 Otro detalle: **solo la mitad de las gasolineras venden 98** (unas 5.000 de más de 10.400 con gasolina 95 en la península y Baleares el 23 de noviembre). Si tu coche la necesita, eso reduce tus opciones y conviene tener localizadas las más baratas que la tienen.
 
 ## E5 y E10
@@ -64,3 +66,10 @@ Las gasolinas que ves en España son normalmente **E5**: llevan hasta un 5 % de 
 **¿Echar 95 a un coche que pide 98 anula la garantía?** El uso puntual no suele dar problemas, pero el fabricante podría poner pegas si hay una avería relacionada con el picado y se demuestra que se usó habitualmente un octanaje inferior.
 
 Relacionado: [diésel o diésel premium](/guias/diesel-o-diesel-premium/) y [¿es peor la gasolina de las low cost?](/guias/gasolineras-low-cost-calidad/).
+
+## Fuentes
+
+- [Real Decreto 61/2006](https://www.boe.es/buscar/act.php?id=BOE-A-2006-2779), por el que se determinan las especificaciones de gasolinas, gasóleos, fuelóleos y gases licuados del petróleo (BOE, texto consolidado).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
+
+Precios: datos oficiales publicados por el Ministerio, procesados por GasolinerasYa (mediana, 23-11-2026).

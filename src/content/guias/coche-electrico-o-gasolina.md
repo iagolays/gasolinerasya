@@ -84,3 +84,11 @@ Si no puedes cargar en casa pero quieres pagar menos por kilómetro, los coches 
 3. Multiplica por el precio de tu gasolinera habitual (lo tienes en la página de tu municipio) o por el de tu tarifa eléctrica.
 
 Si dudas entre gasolina y diésel, compáralos según tus kilómetros en [¿gasolina o diésel?](/guias/gasolina-o-diesel/).
+
+## Fuentes
+
+- [Euros por 100 km](https://www.miteco.gob.es/es/energia/hidrocarburos-nuevos-combustibles/euros-por-100-km.html): comparación oficial del coste de gasolina, gasóleo, GLP, GNC y electricidad (Ministerio para la Transición Ecológica).
+- [Base de datos de consumo y emisiones de turismos](https://coches.idae.es/) (IDAE).
+- [Precio voluntario para el pequeño consumidor (PVPC)](https://www.esios.ree.es/es/pvpc): precio horario de la electricidad (Red Eléctrica, e·sios).
+- [Distintivo ambiental](https://www.dgt.es/nuestros-servicios/tu-vehiculo/tus-vehiculos/distintivo-ambiental/): criterios de las etiquetas CERO, ECO, C y B (Dirección General de Tráfico).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.

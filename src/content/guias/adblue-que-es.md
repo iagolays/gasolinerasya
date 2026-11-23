@@ -62,3 +62,8 @@ En esta web puedes ver el precio del AdBlue en surtidor de cada gasolinera que l
 **¿Puedo circular sin AdBlue si quito el sistema?** No. Anular el SCR es ilegal, el coche dejaría de cumplir la homologación y no pasaría la ITV.
 
 Relacionado: [diésel o diésel premium](/guias/diesel-o-diesel-premium/) y [gasolina o diésel](/guias/gasolina-o-diesel/).
+
+## Fuentes
+
+- [ISO 22241-1:2019](https://www.iso.org/standard/66408.html), requisitos de calidad del agente reductor AUS 32, comercializado como AdBlue (ISO).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.

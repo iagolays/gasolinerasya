@@ -61,3 +61,9 @@ La normativa sobre la atención en gasolineras automáticas **depende de cada co
 ## Encuentra las más baratas
 
 Muchas de las gasolineras más baratas de cada provincia son automáticas. Puedes verlas en la lista de cada provincia y municipio, ordenadas por precio, o buscar [gasolineras cerca de mí](/cerca/).
+
+## Fuentes
+
+- [Ley 34/1998, del sector de hidrocarburos](https://www.boe.es/buscar/act.php?id=BOE-A-1998-23284) (BOE).
+- [Supervisión de precios de carburantes](https://www.cnmc.es/ambitos-de-actuacion/energia/mercado-petroleo-biocarburantes) (CNMC).
+- [Geoportal de Gasolineras](https://geoportalgasolineras.es/) del Ministerio para la Transición Ecológica y el Reto Demográfico y [servicio de datos de precios de carburantes](https://sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/help) del Ministerio: precios de todas las gasolineras de España, que usa esta web.
