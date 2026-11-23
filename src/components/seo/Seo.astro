@@ -28,8 +28,20 @@ function canonicalPath(p: string): string {
 const canonical = new URL(canonicalPath(path), SITE.url).href;
 // Las páginas de error (/404.html) no llevan canonical: no son una URL real del sitio.
 const isErrorPage = /\.html$/i.test(path);
-// Evita "GasolinerasYa | GasolinerasYa" en la portada.
-const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`;
+// Evita "GasolinerasYa | GasolinerasYa" en la portada, y no alarga los títulos que ya pasan de lo que muestra Google.
+const MAX_TITLE = 60;
+const MAX_DESCRIPTION = 160;
+const fullTitle = title.includes(SITE.name) || title.length > MAX_TITLE ? title : `${title} | ${SITE.name}`;
+
+// Recorta la descripción a MAX_DESCRIPTION caracteres en un límite de palabra, con "…".
+function clip(text: string, max: number): string {
+  const t = text.replace(/\s+/g, ' ').trim();
+  if (t.length <= max) return t;
+  const corte = t.slice(0, max).lastIndexOf(' ');
+  const base = t.slice(0, corte > max / 2 ? corte : max - 1).replace(/[\s,;:.·(–-]+$/u, '');
+  return `${base}…`;
+}
+const desc = clip(description, MAX_DESCRIPTION);
 // Imagen para redes (1200×630). Solo se enlaza si existe public/og.png.
 const ogImage = existsSync('public/og.png') ? new URL('/og.png', SITE.url).href : null;
 
@@ -40,7 +52,7 @@ const ldJson = (o: object) => JSON.stringify(o).replace(/</g, '\\u003c');
 const adsenseClient: string = SITE.adsenseClient;
 ---
 <title>{fullTitle}</title>
-<meta name="description" content={description} />
+<meta name="description" content={desc} />
 {!isErrorPage && <link rel="canonical" href={canonical} />}
 <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'} />
 
@@ -48,12 +60,12 @@ const adsenseClient: string = SITE.adsenseClient;
 <meta property="og:locale" content={SITE.lang.replace('-', '_')} />
 <meta property="og:type" content={ogType} />
 <meta property="og:title" content={fullTitle} />
-<meta property="og:description" content={description} />
+<meta property="og:description" content={desc} />
 <meta property="og:url" content={canonical} />
 {ogImage && <meta property="og:image" content={ogImage} />}
 <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
 <meta name="twitter:title" content={fullTitle} />
-<meta name="twitter:description" content={description} />
+<meta name="twitter:description" content={desc} />
 
 {ldList.map((o) => <script type="application/ld+json" is:inline set:html={ldJson(o)} />)}
 

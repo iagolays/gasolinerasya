@@ -9,6 +9,8 @@ import {
   madridDate,
   mergeHistory,
   normalizeAddress,
+  brandSlugSource,
+  moveArticle,
   normalizeBrand,
   parseApiDate,
   parseNum,
@@ -85,18 +87,45 @@ describe('marcas, direcciones y horarios', () => {
     expect(normalizeBrand('BP AP7 BELLATERRA (MI)')).toBe('BP AP7 Bellaterra (MI)');
     expect(normalizeBrand('BP SANDOVAL MI')).toBe('BP Sandoval MI');
     expect(normalizeBrand('AVIA U.S. LA AGUILERA')).toBe('Avia U.S. La Aguilera');
-    expect(normalizeBrand('REPSOL E.S.MILA HERMANOS REDONDO S.L.')).toBe('Repsol E.S. Mila Hermanos Redondo S.L.');
-    expect(normalizeBrand('AREA DE SERVEIS TARADELL,SL')).toBe('Area de Serveis Taradell, S.L.');
-    expect(normalizeBrand('BALTRAN S.A')).toBe('Baltran S.A.');
-    expect(normalizeBrand('CEPSA OPER CANARIOS S,L.')).toBe('Cepsa Oper Canarios S.L.');
-    expect(normalizeBrand('MOEVE COMERCIAL SAU')).toBe('Moeve Comercial S.A.U.');
-    expect(normalizeBrand('FRESAFLOR, S.C.A.')).toBe('Fresaflor, S.C.A.');
-    expect(normalizeBrand('CHESTE AGRARIA COOP.V.')).toBe('Cheste Agraria Coop. V.');
+    expect(normalizeBrand('REPSOL E.S.MILA HERMANOS REDONDO S.L.')).toBe('Repsol E.S. Mila Hermanos Redondo');
+    expect(normalizeBrand('AREA DE SERVEIS TARADELL,SL')).toBe('Area de Serveis Taradell');
+    expect(normalizeBrand('BALTRAN S.A')).toBe('Baltran');
+    expect(normalizeBrand('CEPSA OPER CANARIOS S,L.')).toBe('Cepsa Oper Canarios');
+    expect(normalizeBrand('MOEVE COMERCIAL SAU')).toBe('Moeve Comercial');
+    expect(normalizeBrand('FRESAFLOR, S.C.A.')).toBe('Fresaflor');
+    expect(normalizeBrand('CHESTE AGRARIA COOP.V.')).toBe('Cheste Agraria');
     expect(normalizeBrand('SAT LA CAÑA')).toBe('SAT La Caña');
     expect(normalizeBrand('BP SA POBLA')).toBe('BP Sa Pobla');
     expect(normalizeBrand('C.T. DE SAN VICENTE')).toBe('C.T. de San Vicente');
     expect(normalizeBrand('E.LECLERC LEON')).toBe('E.Leclerc Leon');
     expect(normalizeBrand('LA SAL')).toBe('La Sal');
+  });
+  it('quita la forma jurídica al mostrar la marca, pero no del slug', () => {
+    expect(normalizeBrand('GASOLINERAS PEREZ, S.L.')).toBe('Gasolineras Perez');
+    expect(normalizeBrand('PETROLIS SA')).toBe('Petrolis');
+    expect(normalizeBrand('E.S. EL CRUCE S.L.U.')).toBe('E.S. El Cruce');
+    expect(brandSlugSource('AREA DE SERVEIS TARADELL,SL')).toBe('Area de Serveis Taradell, S.L.');
+    expect(brandSlugSource('BALTRAN S.A')).toBe('Baltran S.A.');
+    expect(brandSlugSource('E.S. EL CRUCE S.L.U.')).toBe('E.S. El Cruce S.L.U.');
+    expect(brandSlugSource('REPSOL')).toBe('Repsol');
+    expect(brandSlug(brandSlugSource('BALTRAN S.A'))).toBe('baltran-s-a');
+    // Sin la forma jurídica no quedaría nombre: se deja.
+    expect(normalizeBrand('1234 S.L.')).toBe('1234 S.L.');
+    // Marca con página cuyo slug lleva la forma jurídica: se conserva.
+    expect(normalizeBrand('FARRUCO S.A.')).toBe('Farruco S.A.');
+  });
+  it('recoloca los artículos entre paréntesis de las direcciones', () => {
+    expect(normalizeAddress('CALLE CONSTITUCION (DE LA), 100')).toBe('Calle de la Constitucion, 100');
+    expect(normalizeAddress('CAMI SANT CRIST (DEL), 32')).toBe('Cami del Sant Crist, 32');
+    expect(normalizeAddress('CALLE POZO (EL), 106')).toBe('Calle El Pozo, 106');
+    expect(normalizeAddress('AVENIDA CASTROS (LOS), 113')).toBe('Avenida Los Castros, 113');
+    expect(normalizeAddress('CALLE ARENAS (DE LAS), 2')).toBe('Calle de las Arenas, 2');
+    expect(normalizeAddress('CARRETERA NIJAR A RETAMAR (DISEMINADO) (DE) KM. 0')).toBe(
+      'Carretera de Nijar a Retamar (Diseminado) km. 0',
+    );
+    expect(moveArticle('Calle Constitucion (De la), 100')).toBe('Calle de la Constitucion, 100');
+    expect(moveArticle('Pozo (El), 3')).toBe('El Pozo, 3');
+    expect(moveArticle('Autopista AP-7 (Mrg. Izdo.) km. 613,2')).toBe('Autopista AP-7 (Mrg. Izdo.) km. 613,2');
   });
   it('normaliza direcciones', () => {
     expect(normalizeAddress('AVDA. DE ESPAÑA, S/N')).toBe('Avenida de España, S/N');
@@ -168,6 +197,23 @@ describe('precios atípicos', () => {
     expect(skipped.noPrices).toBe(1);
     expect(dataset.stations).toHaveLength(1);
     expect(dataset.stations[0]!.prices).toEqual({ gasolina95: 1.699, diesel: 1.829 });
+  });
+});
+
+describe('slugs con forma jurídica', () => {
+  it('mantiene la forma jurídica en el slug de la ficha y en stations.min', () => {
+    const { dataset } = buildDataset({
+      Fecha: '26/10/2026 0:18:58',
+      ListaEESSPrecio: [raw({ 'Rótulo': 'BALTRAN S.A' }), raw({ IDEESS: '4376', 'Rótulo': 'BALTRAN' })],
+    });
+    const a = dataset.stations.find((s) => s.id === '4375')!;
+    const b = dataset.stations.find((s) => s.id === '4376')!;
+    expect(a.brand).toBe('Baltran');
+    expect(a.slug).toBe('baltran-s-a-abengibre-4375');
+    expect(b.slug).toBe('baltran-abengibre-4376');
+    const decoded = decodeStationsMin(buildStationsMin(dataset));
+    expect(decoded.find((d) => d.id === '4375')?.url).toBe('/gasolinera/baltran-s-a-abengibre-4375/');
+    expect(decoded.find((d) => d.id === '4376')?.url).toBe('/gasolinera/baltran-abengibre-4376/');
   });
 });
 

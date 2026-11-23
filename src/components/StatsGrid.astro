@@ -15,11 +15,13 @@ interface Props {
 }
 const { stats, reference, refLabel = '' } = Astro.props;
 const fuels = FUEL_ORDER.filter((f) => stats[f]);
+/** Con menos gasolineras una media no es representativa: no se compara con la referencia. */
+const MIN_TO_COMPARE = 3;
 ---
 <ul class="stats-grid">
   {fuels.map((f) => {
     const s = stats[f]!;
-    const ref = reference?.[f];
+    const ref = s.count >= MIN_TO_COMPARE ? reference?.[f] : undefined;
     return (
       <li class="stat">
         <div class="stat-head">
