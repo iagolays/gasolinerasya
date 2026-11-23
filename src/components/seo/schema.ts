@@ -126,6 +126,81 @@ export function websiteLd(): Ld {
   };
 }
 
+/** Autor de los contenidos: la persona física titular del sitio. */
+export function authorLd(): Ld {
+  return {
+    '@type': 'Person',
+    '@id': absUrl(SITE.author.path),
+    name: SITE.author.name,
+    url: absUrl(SITE.author.path),
+  };
+}
+
+/** El sitio como editor (publisher) de los contenidos. */
+export function publisherLd(): Ld {
+  return {
+    '@type': 'Organization',
+    '@id': `${absUrl('/')}#organizacion`,
+    name: SITE.name,
+    url: absUrl('/'),
+    logo: { '@type': 'ImageObject', url: absUrl('/favicon.svg') },
+    email: SITE.email,
+  };
+}
+
+export interface ArticleLdInput {
+  title: string;
+  description: string;
+  path: string;
+  /** Fechas de publicación y de la última revisión. */
+  published: Date;
+  updated: Date;
+}
+
+/** Artículo (guías): autor persona y editor el sitio. */
+export function articleLd(a: ArticleLdInput): Ld {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: a.title,
+    description: a.description,
+    datePublished: a.published.toISOString().slice(0, 10),
+    dateModified: a.updated.toISOString().slice(0, 10),
+    inLanguage: SITE.lang,
+    mainEntityOfPage: absUrl(a.path),
+    author: authorLd(),
+    publisher: publisherLd(),
+  };
+}
+
+/** Página "Acerca de" con la persona que hace la web como tema principal. */
+export function aboutPageLd(): Ld {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: `Acerca de ${SITE.name}`,
+    url: absUrl('/acerca/'),
+    inLanguage: SITE.lang,
+    mainEntity: authorLd(),
+    publisher: publisherLd(),
+  };
+}
+
+/** Página de contacto. */
+export function contactPageLd(): Ld {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    name: `Contacto de ${SITE.name}`,
+    url: absUrl('/contacto/'),
+    inLanguage: SITE.lang,
+    mainEntity: {
+      ...publisherLd(),
+      contactPoint: { '@type': 'ContactPoint', contactType: 'customer support', email: SITE.email, availableLanguage: 'es' },
+    },
+  };
+}
+
 export interface ItemListEntry {
   name: string;
   path: string;

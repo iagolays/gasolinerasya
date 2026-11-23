@@ -1,0 +1,73 @@
+---
+// Página de contacto: correo, para qué escribir y plazo orientativo de respuesta.
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site.config';
+import { contactPageLd } from '../components/seo/schema';
+
+const title = `Contacto`;
+const description = `Cómo contactar con ${SITE.name}: avisar de un error en un precio o en una guía, proponer correcciones o pedir datos para prensa.`;
+const mailto = `mailto:${SITE.email}`;
+---
+<Base
+  title={title}
+  description={description}
+  path="/contacto/"
+  jsonLd={contactPageLd()}
+  breadcrumbs={[{ name: 'Contacto', path: '/contacto/' }]}
+>
+  <article class="prose contacto">
+    <h1>Contacto</h1>
+    <p class="lead">
+      {SITE.name} lo hago yo, <a href="/acerca/#autor">{SITE.author.name}</a>. Para cualquier cosa, escríbeme a
+      {' '}<a href={mailto}><strong>{SITE.email}</strong></a>.
+    </p>
+
+    <h2>Si un precio no coincide con el del surtidor</h2>
+    <p>
+      Los precios no los pongo yo: cada gasolinera está obligada a comunicar los suyos al Ministerio para la Transición
+      Ecológica y el Reto Demográfico, que los publica como datos abiertos, y la web los descarga <strong>cada hora</strong>.
+      Si ves un precio distinto, lo más probable es que la estación lo haya cambiado y aún no lo haya comunicado, o que lo
+      haya comunicado mal. Eso solo puede corregirlo la propia gasolinera ante el Ministerio.
+    </p>
+    <p>
+      Aun así, avísame si el error se repite o si parece un fallo de la web (un precio imposible, una gasolinera en el
+      municipio equivocado, un nombre mal escrito): indica la dirección de la página, el carburante y, si puedes, el precio
+      real y la fecha. Lo reviso y, si es cosa mía, lo corrijo.
+    </p>
+
+    <h2>Correcciones en las guías y los informes</h2>
+    <p>
+      Si una <a href="/guias/">guía</a> tiene un dato equivocado o desactualizado (una norma, un impuesto, una cifra) o un
+      {' '}<a href="/informes/">informe</a> no cuadra, cuéntame qué está mal y, si la tienes, la fuente. Cuando corrijo una guía
+      se actualiza su fecha de revisión. Cómo se calculan las cifras está explicado en la
+      {' '}<a href="/metodologia/">metodología</a>.
+    </p>
+
+    <h2>Prensa y datos</h2>
+    <p>
+      Si escribes sobre precios de carburantes y necesitas una cifra concreta (medias por provincia, comparativas entre marcas,
+      evolución reciente), escríbeme e intentaré ayudarte. Los datos de origen son públicos y puedes citarlos como
+      «elaboración de {SITE.name} con datos del Ministerio para la Transición Ecológica y el Reto Demográfico».
+    </p>
+
+    <h2>Plazo de respuesta</h2>
+    <p>
+      Es un proyecto personal y lo atiendo en mi tiempo libre, así que no puedo garantizar un plazo. Normalmente intento
+      contestar en unos días; los avisos de errores en la web tienen prioridad.
+    </p>
+    <!-- REVISAR: ajustar el plazo de respuesta a lo que el titular pueda cumplir de verdad. -->
+
+    <p class="notice small">
+      {SITE.name} <strong>no es una web oficial</strong>: no puedo tramitar reclamaciones contra gasolineras ni
+      gestionar nada en nombre del Ministerio. Para reclamar a una estación de servicio, dirígete a ella o a los servicios de
+      consumo de tu comunidad autónoma. Más información en el <a href="/aviso-legal/">aviso legal</a> y en la
+      {' '}<a href="/privacidad/">política de privacidad</a> (qué hago con los correos que recibo).
+    </p>
+  </article>
+</Base>
+
+<style>
+  .contacto h2 {
+    margin-top: 1.6em;
+  }
+</style>

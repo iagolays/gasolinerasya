@@ -4,7 +4,7 @@ import type { GetStaticPaths } from 'astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import AdSlot from '../../components/ads/AdSlot.astro';
-import { absUrl } from '../../components/seo/schema';
+import { articleLd } from '../../components/seo/schema';
 import { SITE } from '../../site.config';
 import { date } from '../../components/util/format';
 
@@ -25,34 +25,31 @@ const updated = guia.data.updated ?? published;
 const path = `/guias/${guia.id}/`;
 const relatedGuias = related.map((id) => all.find((g) => g.id === id)).filter((g): g is CollectionEntry<'guias'> => !!g);
 
-const articleLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Article',
-  headline: title,
-  description,
-  datePublished: published.toISOString().slice(0, 10),
-  dateModified: updated.toISOString().slice(0, 10),
-  inLanguage: 'es-ES',
-  mainEntityOfPage: absUrl(path),
-  author: { '@type': 'Organization', name: SITE.name, url: SITE.url },
-  publisher: { '@type': 'Organization', name: SITE.name, url: SITE.url },
-};
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+const revised = iso(updated) !== iso(published);
 ---
 <Base
   title={title}
   description={description}
   path={path}
   ogType="article"
-  jsonLd={articleLd}
+  jsonLd={articleLd({ title, description, path, published, updated })}
   breadcrumbs={[{ name: 'Guías', path: '/guias/' }, { name: title, path }]}
 >
   <article class="article">
     <h1>{title}</h1>
     <p class="article-meta">
-      Por el equipo de {SITE.name} · Actualizado el <time datetime={updated.toISOString().slice(0, 10)}>{date(updated)}</time>
+      Por <a href={SITE.author.path} rel="author">{SITE.author.name}</a>
+      {' '}· Publicado el <time datetime={iso(published)}>{date(published)}</time>
+      {revised && <>{' '}· Revisado el <time datetime={iso(updated)}>{date(updated)}</time></>}
     </p>
     <AdSlot position="top" />
     <Content />
+    <p class="small muted guia-fe">
+      Las guías se revisan cuando cambian las normas, los impuestos o los datos en los que se apoyan. ¿Has visto un error o
+      algo desactualizado? <a href="/contacto/">Escríbeme</a> y lo corrijo. Cómo se calculan las cifras:
+      {' '}<a href="/metodologia/">metodología</a>.
+    </p>
   </article>
 
   <aside class="section notice">
@@ -75,3 +72,11 @@ const articleLd = {
 
   <AdSlot position="bottom" />
 </Base>
+
+<style>
+  .guia-fe {
+    margin-top: 2em;
+    padding-top: 1em;
+    border-top: 1px solid var(--border);
+  }
+</style>

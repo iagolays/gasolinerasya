@@ -5,6 +5,7 @@ import Base from '../../layouts/Base.astro';
 import AdSlot from '../../components/ads/AdSlot.astro';
 import { itemListLd } from '../../components/seo/schema';
 import { REPORTS } from '../../lib/reports';
+import { SITE } from '../../site.config';
 
 const guias = (await getCollection('guias')).sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title, 'es'));
 const title = 'Guías para ahorrar en gasolina y diésel';
@@ -20,6 +21,10 @@ const description = 'Guías prácticas para gastar menos en carburante: cuándo 
   <header class="page-head">
     <h1>Guías para ahorrar en carburante</h1>
     <p class="lead">Todo lo que conviene saber para pagar menos cada vez que repostas, explicado sin rodeos.</p>
+    <p class="small muted">
+      Escritas y revisadas por <a href={SITE.author.path} rel="author">{SITE.author.name}</a>. Las cifras salen de los precios
+      oficiales del Ministerio (<a href="/metodologia/">metodología</a>); si ves un error, <a href="/contacto/">avísame</a>.
+    </p>
   </header>
 
   <AdSlot position="top" />

@@ -2,7 +2,7 @@
 // Página "Acerca de": qué es el sitio, de dónde salen los datos y cómo se calculan las cifras.
 import Base from '../layouts/Base.astro';
 import { SITE } from '../site.config';
-import { datasetLd } from '../components/seo/schema';
+import { aboutPageLd, datasetLd } from '../components/seo/schema';
 import { getStations, getMunicipalities, getProvinces, getUpdatedAt } from '../lib/data';
 import { FUELS, FUEL_ORDER } from '../lib/fuels';
 import { dateTime, int } from '../components/util/format';
@@ -17,7 +17,7 @@ const nProvincias = getProvinces().length;
   description={`Qué es ${SITE.name}, de dónde salen los precios de las ${int(nEstaciones)} gasolineras de España, cada cuánto se actualizan y cómo se calculan las medias.`}
   path="/acerca/"
   ogType="article"
-  jsonLd={datasetLd(updatedAt.toISOString())}
+  jsonLd={[aboutPageLd(), datasetLd(updatedAt.toISOString())]}
   breadcrumbs={[{ name: 'Acerca de', path: '/acerca/' }]}
 >
   <article class="prose legal">
@@ -34,32 +34,70 @@ const nProvincias = getProvinces().length;
       el del surtidor.
     </p>
 
+    <section id="autor" aria-labelledby="quien">
+      <h2 id="quien">Quién hace esta web</h2>
+      <p>
+        Me llamo <strong>{SITE.author.name}</strong> y {SITE.name} es un proyecto personal: lo hago y lo mantengo yo solo,
+        no hay una empresa ni un equipo detrás. Soy también el titular que figura en el <a href="/aviso-legal/">aviso legal</a>.
+      </p>
+      <!-- REVISAR: añadir aquí, si se quiere, una o dos frases personales (ciudad, a qué se dedica el titular, desde cuándo conduce o por qué le interesa el tema). No inventar nada. -->
+      <p>
+        La empecé porque los precios oficiales de los carburantes son públicos, pero no siempre es fácil compararlos de un
+        vistazo. Quería una web rápida y clara para saber qué gasolinera es la más barata en mi municipio, en mi provincia o
+        en mi ruta, y entender por qué los precios cambian.
+      </p>
+      <!-- REVISAR: si hay una anécdota real que motivó el proyecto, este es el sitio para contarla. -->
+      <h3>Cómo trabajo</h3>
+      <ul>
+        <li>
+          <strong>Precios</strong>: un proceso automático descarga los datos del Ministerio <strong>cada hora</strong> y
+          regenera todas las páginas. No edito precios a mano: muestro lo que cada gasolinera comunica.
+        </li>
+        <li>
+          <strong>Cifras e informes</strong>: medias, rankings e histórico se calculan siempre igual, tal y como explico en la
+          {' '}<a href="/metodologia/">metodología</a>.
+        </li>
+        <li>
+          <strong>Guías</strong>: las escribo yo y las reviso cuando cambian las normas, los impuestos o los datos en los que se
+          apoyan; cada guía indica cuándo se publicó y cuándo se revisó por última vez.
+        </li>
+        <li>
+          <strong>Errores</strong>: si algo no cuadra, puedes escribirme desde la página de <a href="/contacto/">contacto</a>.
+          Corrijo lo que es mío (cálculos, textos, nombres) y explico lo que depende de la fuente.
+        </li>
+        <li>
+          <strong>Financiación</strong>: no hay inversores ni patrocinadores ni acuerdos con marcas de carburante. Los únicos
+          ingresos previstos son los de la publicidad (ver más abajo).
+        </li>
+      </ul>
+    </section>
+
     <h2>De dónde salen los datos</h2>
     <p>
       <strong>Origen de los datos: Ministerio para la Transición Ecológica y el Reto Demográfico</strong>, a través
       del servicio público de precios de carburantes del
       {' '}<a href={SITE.dataSource.url} rel="noopener" target="_blank">Geoportal de Hidrocarburos</a>. Las estaciones
       de servicio están obligadas a comunicar sus precios al Ministerio, que los publica como datos abiertos. Los
-      reutilizamos conforme a la Ley 37/2007 sobre reutilización de la información del sector público y a las
+      reutilizo conforme a la Ley 37/2007 sobre reutilización de la información del sector público y a las
       condiciones generales de reutilización del Ministerio, sin que este participe, patrocine ni respalde este sitio.
     </p>
     <p>
       Última actualización de los datos: <time datetime={updatedAt.toISOString()}><strong>{dateTime(updatedAt)}</strong></time>.
-      Los descargamos y regeneramos la web aproximadamente <strong>cada hora</strong>. Solo se muestran las
+      Los descargo y regenero la web <strong>cada hora</strong>. Solo se muestran las
       estaciones de venta al público (no las de venta restringida a cooperativas o flotas).
     </p>
 
-    <h2>Qué carburantes mostramos</h2>
+    <h2>Qué carburantes se muestran</h2>
     <ul>
       {FUEL_ORDER.map((k) => <li>{FUELS[k].label} ({FUELS[k].unit})</li>)}
     </ul>
 
-    <h2>Cómo calculamos las cifras</h2>
+    <h2>Cómo se calculan las cifras</h2>
     <ul>
       <li><strong>Media</strong>: promedio de los precios de todas las gasolineras de la zona que venden ese carburante.</li>
       <li><strong>Mediana</strong>: el precio que queda en medio si se ordenan todos; se ve menos afectada por precios extremos.</li>
       <li><strong>Diferencias en %</strong>: comparan el precio de una gasolinera con la media de su municipio o provincia.</li>
-      <li><strong>Histórico</strong>: guardamos cada día la mediana nacional y la de cada provincia para dibujar la evolución.</li>
+      <li><strong>Histórico</strong>: se guarda cada día la mediana nacional y la de cada provincia para dibujar la evolución.</li>
     </ul>
     <p>
       Estas cifras son elaboraciones propias de {SITE.name} a partir de los datos oficiales, no estadísticas del
@@ -77,8 +115,9 @@ const nProvincias = getProvinces().length;
     <h2>¿Has visto un error?</h2>
     <p>
       Si un precio no coincide con el del surtidor, es probable que la estación no lo haya comunicado aún al
-      Ministerio: los datos de origen son responsabilidad de cada gasolinera. Si el error es nuestro (un cálculo, un
-      nombre mal escrito, un enlace roto), escríbenos a <a href="mailto:contacto@gasolinerasya.es">contacto@gasolinerasya.es</a>.
+      Ministerio: los datos de origen son responsabilidad de cada gasolinera. Si el error es mío (un cálculo, un
+      nombre mal escrito, un enlace roto), escríbeme a <a href={`mailto:${SITE.email}`}>{SITE.email}</a> o mira la página de
+      {' '}<a href="/contacto/">contacto</a>.
     </p>
     <p class="small muted">
       Mapas: © colaboradores de <a href="https://www.openstreetmap.org/copyright" rel="noopener" target="_blank">OpenStreetMap</a>.

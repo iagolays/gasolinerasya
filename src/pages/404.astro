@@ -1,31 +1,64 @@
 ---
-// Página de error 404 (Cloudflare Pages sirve dist/404.html con estado 404).
+// Página de error 404 (Cloudflare sirve dist/404.html con estado 404).
+// Útil: buscador de municipio, enlaces a guías e informes y vías para avisar del enlace roto.
+import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import MuniSearch from '../components/MuniSearch.astro';
 import { SITE } from '../site.config';
+import { REPORTS } from '../lib/reports';
+
+// las cinco primeras guías del índice (mismo orden que /guias/)
+const guias = (await getCollection('guias'))
+  .sort((a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title, 'es'))
+  .slice(0, 5);
 ---
 <Base
   title="Página no encontrada"
-  description={`La página que buscas no existe en ${SITE.name}. Busca tu provincia o las gasolineras más cercanas.`}
+  description={`La página que buscas no existe en ${SITE.name}. Busca tu municipio, tu provincia o las gasolineras más cercanas.`}
   path="/404.html"
   noindex
 >
   <section class="prose notfound">
-    <h1>No encontramos esta página</h1>
+    <h1>Esta página no existe</h1>
     <p class="lead">
       Puede que la dirección esté mal escrita o que la gasolinera haya dejado de comunicar sus precios al
-      Ministerio y ya no aparezca.
+      Ministerio y ya no aparezca. Prueba a buscar tu municipio:
     </p>
+    <MuniSearch id="buscar-municipio-404" />
     <p class="actions">
       <a class="btn btn-primary" href="/cerca/">Gasolineras cerca de mí</a>
       <a class="btn" href="/#provincias">Ver provincias</a>
       <a class="btn" href="/">Ir a la portada</a>
     </p>
   </section>
+
+  <section class="section" aria-labelledby="nf-guias">
+    <h2 id="nf-guias">Guías para ahorrar</h2>
+    <ul class="card-list">
+      {guias.map((g) => (
+        <li><a href={`/guias/${g.id}/`}><strong>{g.data.title}</strong><span>{g.data.description}</span></a></li>
+      ))}
+    </ul>
+    <p><a href="/guias/">Ver todas las guías</a></p>
+  </section>
+
+  <section class="section" aria-labelledby="nf-informes">
+    <h2 id="nf-informes">Informes con los datos de hoy</h2>
+    <ul class="card-list">
+      {REPORTS.map((r) => (
+        <li><a href={r.path}><strong>{r.title}</strong><span>{r.summary}</span></a></li>
+      ))}
+    </ul>
+  </section>
+
+  <p class="small muted">
+    ¿Llegaste aquí desde un enlace de esta web? <a href="/contacto/">Avísame</a> y lo arreglo.
+  </p>
 </Base>
 
 <style>
   .notfound {
-    padding: 48px 0 24px;
+    padding: 48px 0 8px;
   }
   .actions {
     display: flex;
