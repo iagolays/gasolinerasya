@@ -1,10 +1,17 @@
 // Marcas (rótulos) con página propia: agregados por marca y clasificación low cost / tradicional.
 import type { Station, StatsByFuel } from './types';
-import { getStations, statsFor } from './data';
+import { getStations, hasOwnFuelTaxes, statsFor } from './data';
 import { GENERIC_BRAND, slugify } from './slug';
 
 /** Mínimo de gasolineras para que una marca tenga página (por debajo es casi siempre un negocio local). */
 export const MIN_BRAND_STATIONS = 10;
+
+/**
+ * Las marcas con página pero con menos gasolineras que esto llevan noindex,follow y no entran
+ * en el sitemap: su página aporta poco frente a las de los municipios (rechazo de AdSense por
+ * «contenido de poco valor»). Siguen existiendo y enlazadas desde /marcas/ y las fichas.
+ */
+export const MIN_BRAND_STATIONS_TO_INDEX = 20;
 
 /**
  * Cadenas de bajo coste (sin tienda grande ni personal en pista o asociadas a supermercados).
@@ -101,6 +108,68 @@ export function brandPathOf(name: string): string | undefined {
 
 export function brandPath(b: Pick<Brand, 'slug'>): string {
   return `/marca/${b.slug}/`;
+}
+
+export function isIndexableBrand(b: Pick<Brand, 'stations'>): boolean {
+  return b.stations.length >= MIN_BRAND_STATIONS_TO_INDEX;
+}
+
+// ── Guías relacionadas por contexto (bloque «Guías útiles») ──
+
+/** Guías que se reparten entre todas las páginas de datos para que reciban enlaces internos. */
+export const ROTATING_GUIDES = [
+  'compensa-desviarse-para-repostar',
+  'descuentos-y-tarjetas-carburante',
+  'combustible-equivocado',
+  'coche-electrico-o-gasolina',
+  'mejor-dia-para-repostar',
+] as const;
+
+/** Hash FNV-1a de 32 bits: determinista entre builds, para rotar las guías por página. */
+export function hashString(text: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
+}
+
+/** Elementos de `list` desde la posición `start` (dando la vuelta), sin repetir. */
+function rotate<T>(list: readonly T[], start: number): T[] {
+  if (!list.length) return [];
+  const from = start % list.length;
+  return [...list.slice(from), ...list.slice(0, from)];
+}
+
+export interface GuideContext {
+  /** Gasolineras de la página (zona, marca o la propia ficha). */
+  stations: readonly Station[];
+  /** Semilla de la rotación: el slug o la ruta de la página. */
+  seed: string;
+  /** Marca de la página, si es la de una marca. */
+  brandName?: string;
+}
+
+/**
+ * Elige de 3 a `max` slugs de guías según el contexto: GLP y AdBlue si se venden, low cost y
+ * desatendidas si hay marcas low cost, impuestos en Canarias, Ceuta y Melilla, y siempre al menos
+ * una de ROTATING_GUIDES. Si hay más guías de contexto que huecos, también se rotan con la semilla.
+ */
+export function pickRelatedGuides({ stations, seed, brandName }: GuideContext, max = 4): string[] {
+  const h = hashString(seed);
+  const context: string[] = [];
+  if (stations.some((s) => s.prices.glp !== undefined)) context.push('glp-autogas');
+  if (stations.some((s) => s.prices.adblue !== undefined)) context.push('adblue-que-es');
+  const lowCost = brandName ? brandKind(brandName) === 'lowcost' : stations.some((s) => brandKind(s.brand) === 'lowcost');
+  if (lowCost) context.push('gasolineras-low-cost-calidad', 'gasolineras-desatendidas');
+  if (stations.some((s) => hasOwnFuelTaxes(s.provinceId))) context.push('impuestos-de-la-gasolina');
+
+  const slots = Math.max(max - 1, 1);
+  const picked = context.length > slots ? rotate(context, h).slice(0, slots) : context;
+  // Se rellena con las rotatorias hasta `max` (como mínimo una).
+  const extra = rotate(ROTATING_GUIDES, h).slice(0, max - picked.length);
+  return [...picked, ...extra];
 }
 
 /** Vacía la caché (para tests que cambian el dataset). */

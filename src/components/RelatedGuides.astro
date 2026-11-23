@@ -1,0 +1,37 @@
+---
+// Bloque «Guías útiles»: 3-4 guías elegidas según la zona, la marca o la gasolinera
+// (GLP, AdBlue, low cost, impuestos propios...) más una rotatoria para repartir los enlaces internos.
+import { getCollection } from 'astro:content';
+import { pickRelatedGuides } from '../lib/brands';
+import type { Station } from '../lib/types';
+
+interface Props {
+  stations: readonly Station[];
+  /** Semilla de la rotación (slug o ruta de la página). */
+  seed: string;
+  brandName?: string;
+}
+const { stations, seed, brandName } = Astro.props;
+
+const guias = new Map((await getCollection('guias')).map((g) => [g.id, g]));
+const picks = pickRelatedGuides({ stations, seed, brandName })
+  .map((id) => guias.get(id))
+  .filter((g) => g !== undefined);
+---
+{picks.length > 0 && (
+  <section class="section related-guides" aria-labelledby="guias-utiles">
+    <h2 id="guias-utiles">Guías útiles</h2>
+    <ul class="card-list">
+      {picks.map((g) => (
+        <li><a href={`/guias/${g.id}/`}><strong>{g.data.title}</strong><span>{g.data.description}</span></a></li>
+      ))}
+    </ul>
+    <p class="small more"><a href="/guias/">Ver todas las guías →</a></p>
+  </section>
+)}
+
+<style>
+  .more {
+    margin: 14px 0 0;
+  }
+</style>

@@ -83,9 +83,10 @@ const description = `Precio medio hoy: ${avgList(national)}. Compara ${int(stati
   jsonLd={[
     websiteLd(),
     datasetLd(updatedAt.toISOString()),
+    // Apunta a las provincias (indexables), no a las fichas de gasolinera (noindex).
     itemListLd(
-      'Gasolineras más baratas de la península (gasolina 95)',
-      (peninsularRankings.gasolina95 ?? []).map((s) => ({ name: `${s.brand} (${placeOf(s).municipality})`, path: stationPath(s) })),
+      'Precio de la gasolina por provincia',
+      provinces.map(({ p }) => ({ name: `Gasolina en ${p.name}`, path: provincePath(p) })),
     ),
   ]}
 >

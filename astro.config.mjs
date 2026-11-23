@@ -3,21 +3,26 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { SITE } from './src/site.config.ts';
 import { getMunicipalities, isIndexableMunicipality, municipalityPath } from './src/lib/data.ts';
+import { brandPath, getBrands, isIndexableBrand } from './src/lib/brands.ts';
 
 // Páginas que no se incluyen en el sitemap (y que llevan noindex en su <Seo>).
 // El 404 lo excluye ya la integración.
 const NO_SITEMAP = ['/privacidad/', '/cookies/', '/aviso-legal/'];
 
-// Fichas de gasolinera y municipios pequeños: noindex para no llenar el índice de páginas
+// Fichas de gasolinera, municipios pequeños y marcas pequeñas: noindex para no llenar el índice de páginas
 // casi iguales (AdSense rechazó el sitio por «contenido de poco valor» el 2026-11-08).
 // Se calcula al filtrar, cuando ya existe dataset.json.
+// Usa las mismas funciones que los meta robots de las páginas (isIndexableMunicipality, isIndexableBrand).
 /** @type {Set<string> | undefined} */
-let thinMunis;
+let thinPaths;
 /** @param {string} path */
 const isThin = (path) => {
   if (path.startsWith('/gasolinera/')) return true;
-  thinMunis ??= new Set(getMunicipalities().filter((m) => !isIndexableMunicipality(m)).map(municipalityPath));
-  return thinMunis.has(path);
+  thinPaths ??= new Set([
+    ...getMunicipalities().filter((m) => !isIndexableMunicipality(m)).map(municipalityPath),
+    ...getBrands().filter((b) => !isIndexableBrand(b)).map(brandPath),
+  ]);
+  return thinPaths.has(path);
 };
 
 // Fecha del build: los precios cambian cada hora, así que todas las páginas se

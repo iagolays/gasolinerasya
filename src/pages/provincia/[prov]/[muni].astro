@@ -9,7 +9,7 @@ import StatsGrid from '../../../components/StatsGrid.astro';
 import StationTable from '../../../components/StationTable.astro';
 import MapView from '../../../components/MapView.astro';
 import AreaInsights from '../../../components/AreaInsights.astro';
-import { itemListLd } from '../../../components/seo/schema';
+import RelatedGuides from '../../../components/RelatedGuides.astro';
 import {
   cheapest,
   getMunicipalities,
@@ -93,10 +93,6 @@ const path = municipalityPath(muni);
     { name: pName, path: provincePath(province) },
     { name, path },
   ]}
-  jsonLd={itemListLd(
-    `Gasolineras de ${name}`,
-    [...stations].sort((a, b) => (a.prices[defaultFuel] ?? 9) - (b.prices[defaultFuel] ?? 9)).map((s) => ({ name: s.brand, path: stationPath(s) })),
-  )}
 >
   <header class="page-head">
     <h1>Gasolineras en {name}</h1>
@@ -179,6 +175,8 @@ const path = municipalityPath(muni);
       <p class="small" style="margin-top:14px"><a href={provincePath(province)}>Ver todos los municipios de {pName} →</a></p>
     </section>
   )}
+
+  <RelatedGuides stations={stations} seed={path} />
 
   <ToolsStrip />
 

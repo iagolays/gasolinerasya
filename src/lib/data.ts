@@ -188,8 +188,9 @@ export function isPeninsular(provinceId: string): boolean {
  * Municipios con menos gasolineras que esto llevan noindex y no entran en el sitemap:
  * su página repite casi lo mismo que la ficha de la gasolinera y AdSense la ve como
  * «contenido de poco valor» (rechazo del 2026-11-08). Se pueden visitar igual.
+ * Subido de 3 a 8 el 2026-11-23: con 3 seguían quedando ~1.050 municipios casi iguales.
  */
-export const MIN_STATIONS_TO_INDEX = 3;
+export const MIN_STATIONS_TO_INDEX = 8;
 
 export function isIndexableMunicipality(muni: Municipality): boolean {
   return muni.stationIds.length >= MIN_STATIONS_TO_INDEX;
